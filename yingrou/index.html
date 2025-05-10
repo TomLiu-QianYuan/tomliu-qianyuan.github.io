@@ -3,17 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI安慰器</title>
+    <title>荧晞 - 情绪陪伴</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="chat-container" id="chatContainer"></div>
+    <div id="app">
+        <!-- 星空背景 -->
+        <div class="star-field" id="starField"></div>
+        
+        <!-- 聊天容器 -->
+        <div id="chatContainer"></div>
+        
+        <!-- 输入区域 -->
         <div class="input-area">
-            <textarea id="userInput" placeholder="输入你的心情..."></textarea>
-            <button id="sendButton">发送</button>
+            <input type="text" placeholder="说点什么..." id="messageInput">
+            <button id="sendBtn">发送</button>
+            <button id="micBtn">🎤</button>
         </div>
     </div>
+    
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.2/dist/markdown-it.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 </body>
 </html>
