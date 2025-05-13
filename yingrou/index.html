@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>荧柔/荧曦</title>
@@ -17,7 +18,10 @@
             100% { transform: scale(2); opacity: 0; }
         }
     </style>
-    <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="style.css">
+    <!-- 加载GSAP动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
 </head>
 <body>
     <div id="app">
@@ -29,14 +33,32 @@
         
         <!-- 输入区域 -->
         <div class="input-container">
+            <!-- 角色选择器 -->
+            <div class="role-selector">
+                <button id="roleToggleBtn">
+                    <span id="currentRoleName">荧柔</span> ▼
+                    <div class="role-avatar">
+                        <img src="roles/avatars/yingrou.png" id="currentRoleAvatar" 
+                            alt="角色头像" width="24" height="24"
+                            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyLDJBMTAsMTAgMCAwLDAgMiwxMkExMCwxMCAwIDAsMCAxMiwyMkExMCwxMCAwIDAsMCAyMiwxMkExMCwxMCAwIDAsMCAxMiwyTTEyLDQuNEMxNS4zMiw0LjQgMTguMSw3LjE4IDE4LjEsMTAuNUMxOC4xLDEzLjgyIDE1LjMyLDE2LjYgMTIsMTYuNkM4LjY4LDE2LjYgNS45LDEzLjgyIDUuOSwxMC41QzUuOSw3LjE4IDguNjgsNC40IDEyLDQuNE0xMiw2LjVDMTAuMDcsNi41IDguNSw4LjA3IDguNSwxMEM4LjUsMTEuOTMgMTAuMDcsMTMuNSAxMiwxMy41QzEzLjkzLDEzLjUgMTUuNSwxMS45MyAxNS41LDEwQzE1LjUsOC4wNyAxMy45Myw2LjUgMTIsNi41WiIvPjwvc3ZnPg=='">
+                    </div>
+                </button>
+                <div class="role-dropdown">
+                    <div class="role-search">
+                        <input type="text" placeholder="搜索角色..." id="roleSearch">
+                    </div>
+                    <div class="role-list" id="roleList"></div>
+                </div>
+            </div>
+
             <input type="text" placeholder="说点什么..." id="messageInput">
             <button id="sendBtn">发送</button>
-            <button id="micBtn">♪</button>
+            <button id="voiceBtn">🎤</button>
             <button id="forgetBtn">↺</button>
         </div>
     </div>
     
-    <script src="script.js"></script>
+ <script src="script.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.2/dist/markdown-it.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 </body>
