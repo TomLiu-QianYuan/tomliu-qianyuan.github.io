@@ -1,0 +1,8 @@
+{
+  "yingxi": {
+    "name": "荧柔",
+    "promptPath": "roles/yingrou.md",
+    "avatar": "roles/avatars/yingrou.png",
+    "color": "#FF7D00"
+  }
+}
