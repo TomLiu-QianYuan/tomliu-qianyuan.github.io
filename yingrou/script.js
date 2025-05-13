@@ -273,6 +273,9 @@ const DOM = {
   get inputContainer() { 
     return document.querySelector('.input-container') || document.createElement('div') 
   },
+  get currentRoleName() { 
+    return document.getElementById('currentRoleName') || document.createElement('span') 
+  },
   get chatContainer() { return document.getElementById('chatContainer') || document.createElement('div') },
   get messageInput() { return document.getElementById('messageInput') || document.createElement('input') },
   get sendBtn() { return document.getElementById('sendBtn') || document.createElement('button') },
@@ -574,28 +577,39 @@ const app = {
 
   // 切换角色
   changeRole(roleId) {
-    if (!state.roles[roleId]) return;
+    const role = state.roles[roleId];
+    if (!role) return;
 
-    // 动画效果
-    gsap.to(DOM.currentRoleAvatar, {
-      scale: 0,
-      duration: 0.2,
+    // GSAP动画确保同步更新
+    gsap.to([DOM.currentRoleAvatar, DOM.roleToggleBtn], {
+      scale: 0.8,
+      opacity: 0.5,
+      duration: 0.15,
       onComplete: () => {
+        // 重点：同步更新头像和名称
+        DOM.currentRoleAvatar.src = role.avatar;
+        DOM.currentRoleAvatar.alt = role.name;
+        DOM.currentRoleName.textContent = role.name;
+        
         state.currentRole = roleId;
-        DOM.currentRoleAvatar.src = state.roles[roleId].avatar;
-        DOM.roleDropdown.classList.remove('show');
         
-        // 添加角色特效
-        this.createFireflies(5, state.roles[roleId].color);
-        
-        gsap.to(DOM.currentRoleAvatar, {
-          scale: 1,
+        // 确保颜色过渡动画
+        gsap.to(DOM.roleToggleBtn, {
+          backgroundColor: role.color + '33', // 带透明度
           duration: 0.3
         });
-        
-        this.addSystemMessage(`已切换到角色: ${state.roles[roleId].name}`);
       }
     });
+
+    gsap.to([DOM.currentRoleAvatar, DOM.roleToggleBtn], {
+      scale: 1,
+      opacity: 1,
+      duration: 0.2,
+      delay: 0.15
+    });
+
+    // 关闭下拉菜单
+    DOM.roleDropdown.classList.remove('show');
   },
 
   // 发送消息
@@ -622,6 +636,7 @@ const app = {
       // 显示响应
       loadingMsg.remove();
       this.addMessage(response, 'bot-message');
+      setTimeout(scrollToBottom, 50);
       
       // 添加特效
       this.createFireflies(3, state.roles[state.currentRole].color);
@@ -1054,7 +1069,11 @@ app.initVisualEffects = function() {
 // 修改原有方法
 app.addMessage = history.addMessage.bind(history);
 
-
+// 发送消息时自动滚动到底部
+function scrollToBottom() {
+  const container = document.getElementById('chatContainer');
+  container.scrollTop = container.scrollHeight;
+}
 app.clearChatHistory = () => {
   DOM.chatContainer.innerHTML = '';
   state.totalMessages = 0;

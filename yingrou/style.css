@@ -499,3 +499,20 @@ body::before {
 .cursor-trail {
   z-index: 9999;
 }
+
+/* 修改角色切换按钮样式 */
+#roleToggleBtn {
+  transition: 
+    background-color 0.3s,
+    transform 0.2s ease-out;
+}
+
+#currentRoleName {
+  transition: color 0.3s;
+}
+
+#currentRoleAvatar {
+  transition: 
+    transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+    opacity 0.2s;
+}
