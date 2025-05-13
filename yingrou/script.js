@@ -599,7 +599,8 @@ const app = {
           duration: 0.3
         });
       }
-    });
+    }
+    );
 
     gsap.to([DOM.currentRoleAvatar, DOM.roleToggleBtn], {
       scale: 1,
@@ -607,7 +608,7 @@ const app = {
       duration: 0.2,
       delay: 0.15
     });
-
+    this.addSystemMessage(`已切换角色: ${role.name}`);
     // 关闭下拉菜单
     DOM.roleDropdown.classList.remove('show');
   },
