@@ -7,7 +7,6 @@ body {
   overflow-x: hidden;
   position: relative;
   min-height: 100vh;
-  cursor: none;
   overflow: hidden;
   background: #041322;
 }
