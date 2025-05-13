@@ -4,21 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>荧柔/荧曦</title>
+    <style>
+        @keyframes fireflyFloat {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(5px, -5px); }
+            50% { transform: translate(0, -10px); }
+            75% { transform: translate(-5px, -5px); }
+        }
+        
+        @keyframes cursorTrail {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app">
-        <!-- 星空背景 -->
-        <div class="star-field" id="starField"></div>
+        <!-- 光标轨迹元素 -->
+        <div id="cursorTrail"></div>
         
         <!-- 聊天容器 -->
         <div id="chatContainer"></div>
         
         <!-- 输入区域 -->
-        <div class="input-area">
+        <div class="input-container">
             <input type="text" placeholder="说点什么..." id="messageInput">
             <button id="sendBtn">发送</button>
-            <button id="micBtn">🎤</button>
+            <button id="micBtn">♪</button>
+            <button id="forgetBtn">↺</button>
         </div>
     </div>
     
