@@ -24,7 +24,7 @@ const IntroManager = {
     if (hasSeenIntro) {
       this.skipIntro();
       return;
-    }ddd
+    }
 
     this.createIntroScreen();
     this.animateLines();
