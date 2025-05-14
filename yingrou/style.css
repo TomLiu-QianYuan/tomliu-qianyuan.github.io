@@ -46,7 +46,7 @@ body::before {
 /* === 聊天容器 === */
 #chatContainer {
   width: 100%;
-  max-width: 800px;
+  max-width: auto;
   margin: 0 auto;
   padding: 20px;
   padding-bottom: 140px;
