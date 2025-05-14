@@ -529,6 +529,18 @@ body::before {
   }
 }
 
+#roleToggleBtn img {
+    width: 28px;                /* 固定头像大小 */
+    height: 28px;
+    border-radius: 50%;         /* 圆形头像 */
+    object-fit: cover;          /* 防止图片拉伸 */
+    vertical-align: middle;     /* 额外保险：防止可能的基线偏移 */
+}
+/* 调整小箭头(▼)的上下间距 */
+#roleToggleBtn span {
+    display: flex;
+    align-items: center;       /* 确保文字和头像对齐 */
+}
 @media (max-width: 480px) {
   #app {
     padding: 10px;
@@ -584,9 +596,18 @@ body::before {
 
 /* 修改角色切换按钮样式 */
 #roleToggleBtn {
-  transition: 
-    background-color 0.3s,
-    transform 0.2s ease-out;
+  display: flex;              /* 确保flex布局 */
+    align-items: center;        /* 垂直居中对齐 */
+    justify-content: center;    /* 水平居中对齐（可选） */
+    gap: 8px;                   /* 头像和文字间距 */
+    min-height: 40px;           /* 匹配统一高度 */
+    line-height: 40px;          /* 文字垂直居中 */
+    padding: 0 12px;            /* 确保文字不会紧贴边缘 */
+    border-radius: 24px;        /* 圆角风格统一 */
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    cursor: pointer;
 }
 
 #currentRoleName {
