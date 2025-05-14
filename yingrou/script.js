@@ -24,7 +24,7 @@ const IntroManager = {
     if (hasSeenIntro) {
       this.skipIntro();
       return;
-    }
+    }ddd
 
     this.createIntroScreen();
     this.animateLines();
@@ -900,12 +900,19 @@ const app = {
     recognition.lang = 'zh-CN';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+    recognition.continuous = false; // 设置为false，每次停止后需要重新启动
 
     recognition.onresult = (e) => {
       const transcript = e.results[0][0].transcript;
-      DOM.messageInput.value = transcript;
+      // 追加文本而不是替换
+      DOM.messageInput.value = DOM.messageInput.value 
+        ? DOM.messageInput.value + ' ' + transcript 
+        : transcript;
       DOM.voiceBtn.classList.remove('active');
       state.isListening = false;
+      
+      // 自动聚焦到输入框
+      DOM.messageInput.focus();
     };
 
     recognition.onerror = (e) => {
@@ -913,7 +920,16 @@ const app = {
       DOM.voiceBtn.classList.remove('active');
       state.isListening = false;
     };
-
+    recognition.onend = () => {
+        if (state.isListening) {
+          // 如果仍在监听状态但识别结束了，重新开始
+          setTimeout(() => {
+            if (state.isListening) {
+              state.recognition.start();
+            }
+          }, 100);
+        }
+      };
     state.recognition = recognition;
   },
 
@@ -1251,10 +1267,9 @@ app.addMusicControlButton = function() {
 app.playBackgroundMusic = function() {
   if (state.isMusicPlaying) return;
   state.audioPlayer.src = 'backmusic/1.mp3';
-  state.audioPlayer.loop = true;
-  state.audioPlayer.volume = 0.3;
-  
+  state.audioPlayer.load();
   const playPromise = state.audioPlayer.play();
+  this.addMusicControlButton();
   
   if (playPromise !== undefined) {
     playPromise
@@ -1359,12 +1374,7 @@ app.init = async function() {
     state.audioPlayer.load();
     this.addMusicControlButton(); // 始终添加音乐按钮
     
-    // 自动播放处理
-    document.body.addEventListener('click', () => {
-      if (!state.isMusicPlaying) {
-        this.playBackgroundMusic();
-      }
-    }, { once: true });
+    
   } catch (error) {
     console.error('初始化错误:', error);
   }

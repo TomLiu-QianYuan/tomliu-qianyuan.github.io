@@ -93,7 +93,7 @@ body::before {
   max-width: auto;
   margin: 0 auto;
   padding: 20px;
-  padding-bottom: 140px;
+  padding-bottom: 10px;
   flex: 1 1 auto;
   overflow-y: auto;
   scroll-behavior: smooth;
@@ -103,9 +103,7 @@ body::before {
   z-index: 2;
   will-change: transform;
   contain: content;
-  max-height: 80vh;
-
-  min-height: 0;
+  height: calc(100vh - 120px); 
 }
 
 #chatContainer::-webkit-scrollbar {
@@ -173,13 +171,14 @@ body::before {
 /* === 输入区域 === */
 .input-container {
   position: fixed;
-  bottom: 0;
+  bottom: 10px;
   left: 0;
   right: 0;
+  height: 0;
   background: linear-gradient(to top, rgba(22, 33, 62, 0.9), transparent);
-  padding: 15px 20px;
   display: flex;
   gap: 10px;
+  margin: 0;
   align-items: center;
   justify-content: center;
   z-index: 100;
@@ -188,7 +187,9 @@ body::before {
 #messageInput {
   flex: 1;
   max-width: 600px;
-  padding: 12px 18px;
+  min-height: 40px;  
+  padding: 0 16px 0 10px;  /* 上 0，右 16px（保留默认间距），下 0，左 5px */
+   
   border-radius: 24px;
   border: none;
   background: rgba(255, 255, 255, 0.1);
@@ -205,6 +206,11 @@ body::before {
   box-shadow: 0 0 0 2px rgba(0, 119, 182, 0.5);
 }
 
+/* === 语音按钮状态 === */
+#voiceBtn.active {
+  background: rgba(255, 50, 50, 0.7);
+  animation: pulse 1.5s infinite;
+}
 #sendBtn, #voiceBtn, #forgetBtn, #roleToggleBtn {
   width: 48px;
   height: 48px;
@@ -439,7 +445,33 @@ body::before {
 .music-control:hover {
   background: rgba(255,255,255,0.2);
 }
-
+/* === 移动端适配 === */
+@media (max-width: 768px) {
+  #chatContainer {
+    height: calc(100vh - 100px);
+    padding-bottom: 60px;
+  }
+  
+  .input-container {
+    padding: 8px;
+    flex-wrap: wrap;
+  }
+  
+  #messageInput {
+    order: 1;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  
+  #roleToggleBtn {
+    order: 2;
+    margin-right: auto;
+  }
+  
+  #sendBtn, #voiceBtn, #forgetBtn {
+    order: 3;
+  }
+}
 /* === 加载动画 === */
 .loading-dots {
   display: inline-flex;
@@ -565,4 +597,15 @@ body::before {
   transition: 
     transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55),
     opacity 0.2s;
+}
+/* === 所有按钮 === */
+#sendBtn, 
+#voiceBtn, 
+#forgetBtn, 
+#roleToggleBtn,
+.music-control {
+    min-height: 40px;  
+    line-height: 40px;         /* 文字垂直居中 */
+    padding: 0 12px;           /* 左右 padding 调整 */
+    white-space: nowrap;       /* 确保按钮文字不换行 */
 }
