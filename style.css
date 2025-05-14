@@ -1,0 +1,629 @@
+:root {
+    --primary: #f8f4ee;
+    --secondary: #e8e1d9;
+    --accent: #c2b8a8;
+    --dark: #4a4540;
+    --text: #4a4540;
+    --light-text: rgba(74, 69, 64, 0.7);
+    --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Serif SC', serif;
+    color: var(--text);
+    background-color: var(--primary);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.dynamic-bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, transparent 0%, var(--primary) 70%),
+                linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    z-index: -2;
+    animation: bgPulse 30s infinite alternate;
+}
+
+@keyframes bgPulse {
+    0% { opacity: 0.98; }
+    100% { opacity: 1; }
+}
+
+.glass-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 3rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(194, 184, 168, 0.1);
+}
+
+.nav-logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-decoration: none;
+    position: relative;
+}
+
+.nav-logo::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background: var(--text);
+    transition: var(--transition);
+}
+
+.nav-logo:hover::after {
+    width: 100%;
+}
+
+.nav-links {
+    display: flex;
+    gap: 3rem;
+}
+
+.nav-links a {
+    color: var(--light-text);
+    text-decoration: none;
+    font-weight: 300;
+    letter-spacing: 1px;
+    position: relative;
+    transition: var(--transition);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background: var(--accent);
+    transition: var(--transition);
+}
+
+.nav-links a:hover {
+    color: var(--text);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.hero-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 10%;
+    position: relative;
+}
+
+.hero-content {
+    width: 100%;
+}
+
+.hero-text h1 {
+    font-size: clamp(3rem, 8vw, 8rem);
+    font-weight: 300;
+    line-height: 0.9;
+    letter-spacing: -3px;
+    margin-bottom: 2rem;
+    position: relative;
+    display: inline-block;
+}
+
+.hero-text h1::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--accent);
+    z-index: -1;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--light-text);
+    letter-spacing: 3px;
+    margin-left: 5px;
+}
+
+.hero-scroll {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: var(--light-text);
+    letter-spacing: 2px;
+}
+
+.hero-scroll span {
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--text), transparent);
+    animation: scrollAnimation 2s infinite;
+}
+
+@keyframes scrollAnimation {
+    0% { height: 60px; opacity: 1; }
+    100% { height: 0px; opacity: 0; }
+}
+
+/* 新增卡片链接样式 */
+.card-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.section-header {
+    padding: 0 10%;
+    margin-bottom: 5rem;
+    position: relative;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 5px;
+}
+
+.section-line {
+    width: 100px;
+    height: 1px;
+    margin-top: 1.5rem;
+    background: linear-gradient(to right, var(--accent), transparent);
+}
+
+.cards-section {
+    padding: 8rem 0;
+    position: relative;
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4rem;
+    padding: 0 10%;
+}
+
+.card-wrapper {
+    perspective: 1500px;
+    width: 100%;
+    max-width: 450px;
+}
+
+.card {
+    width: 100%;
+    height: 600px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: var(--transition);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.card-decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(242, 237, 228, 0.8) 0%, rgba(232, 225, 215, 0.6) 100%);
+    z-index: 1;
+}
+
+.card-content {
+    position: relative;
+    height: 100%;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    z-index: 3;
+}
+
+.card-number {
+    position: absolute;
+    top: 3rem;
+    right: 3rem;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: rgba(74, 69, 64, 0.2);
+}
+
+.card-title {
+    font-size: 3rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    transform: translateY(20px);
+    transition: var(--transition);
+}
+
+.card-description {
+    font-weight: 300;
+    color: var(--light-text);
+    letter-spacing: 2px;
+    transform: translateY(20px);
+    transition: var(--transition);
+    transition-delay: 0.1s;
+}
+
+.card-line {
+    width: 40px;
+    height: 1px;
+    background: var(--accent);
+    margin: 1.5rem 0;
+    transform: translateY(20px);
+    transition: var(--transition);
+    transition-delay: 0.2s;
+}
+
+.card-details {
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--light-text);
+    max-width: 80%;
+    transform: translateY(20px);
+    transition: var(--transition);
+    transition-delay: 0.3s;
+}
+
+.card-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 75% 50%, transparent 0%, rgba(194, 184, 168, 0.05) 100%);
+    z-index: 2;
+    transition: var(--transition);
+}
+
+.card-glow {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    filter: blur(30px);
+    opacity: 0;
+    z-index: 1;
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-20px);
+}
+
+.card:hover .card-overlay {
+    background: radial-gradient(circle at 75% 50%, transparent 0%, rgba(194, 184, 168, 0.1) 100%);
+}
+
+.card:hover .card-glow {
+    opacity: 0.3;
+}
+
+.card:hover .card-title,
+.card:hover .card-description,
+.card:hover .card-line,
+.card:hover .card-details {
+    transform: translateY(0);
+}
+
+/* 无链接卡片的点击效果 */
+.card-wrapper:not(:first-child) .card {
+    cursor: pointer;
+}
+
+.card-wrapper:not(:first-child) .card:active {
+    transform: translateY(-10px) scale(0.98);
+}
+
+.cursor {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background-color: var(--dark);
+    border-radius: 50%;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    z-index: 999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+}
+
+.cursor-follower {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--dark);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 998;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease-out;
+    opacity: 0.7;
+}
+
+@media (max-width: 1024px) {
+    .cards-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .card-wrapper {
+        max-width: 100%;
+    }
+    
+    .card {
+        height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-nav {
+        padding: 1.5rem;
+    }
+    
+    .nav-links {
+        gap: 1.5rem;
+    }
+    
+    .hero-section {
+        padding: 0 5%;
+    }
+    
+    .cards-section {
+        padding: 5rem 0;
+    }
+    
+    .cards-container {
+        padding: 0 5%;
+    }
+}
+
+/* 新增导航副标题样式 */
+.nav-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-subtitle {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: var(--light-text);
+    letter-spacing: 1px;
+    opacity: 0.8;
+    max-width: 300px;
+}
+
+/* 新增心经浮层样式 */
+#sutra-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(242, 237, 228, 0.9);
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+#sutra-text {
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 2.5;
+    letter-spacing: 2px;
+    color: var(--text);
+    max-width: 60%;
+    text-align: center;
+    padding: 3rem;
+    border: 1px solid rgba(194, 184, 168, 0.5);
+}
+
+.section-description {
+    font-size: 0.9rem;
+    color: var(--light-text);
+    margin-top: 1rem;
+    letter-spacing: 2px;
+    font-weight: 300;
+}
+
+/* 主标题容器 */
+.title-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* 主标题右侧文字 */
+.title-description {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--light-text);
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+    max-width: 300px;
+    line-height: 1.3;
+}
+
+/* 心经弹窗样式 */
+.sutra-popup {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(242, 237, 228, 0.9);
+    border: 1px solid rgba(194, 184, 168, 0.5);
+    padding: 1.5rem 2.5rem;
+    border-radius: 4px;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.6s ease;
+    pointer-events: none;
+    max-width: 600px;
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--text);
+}
+/* 主标题容器 */
+.title-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 4rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+/* 右侧描述文字框 */
+.title-description-box {
+    position: absolute;
+    left: calc(100% + 2rem);
+    top: 0.5rem;
+    width: 180px;
+}
+
+.title-description {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--light-text);
+    letter-spacing: 1.5px;
+    margin-bottom: 0.7rem;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.8s ease;
+    position: relative;
+    padding-left: 1rem;
+}
+
+/* 描述文字前的小竖线 */
+.title-description::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    height: 70%;
+    width: 1px;
+    background: var(--accent-color);
+    opacity: 0.5;
+}
+
+/* 替换原有 .sutra-popup 样式 */
+.sutra-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 12px 18px;
+    background: rgba(242, 237, 228, 0.95);
+    border: 1px solid rgba(194, 184, 168, 0.3);
+    border-radius: 2px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+    transition: opacity 0.3s, transform 0.15s;
+    pointer-events: none;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    max-width: 220px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 添加到CSS文件 */
+.profile-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(250,250,250,0.9) 0%, rgba(242,242,242,0.95) 100%);
+    border-radius: 12px;
+    margin: 30px auto;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+}
+
+.profile-content {
+    max-width: 680px;
+    padding: 25px;
+}
+
+.profile-content p {
+    font-family: 'Helvetica Neue', system-ui;
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: #404040;
+    margin: 1.2em 0;
+    padding-left: 1.8rem;
+    position: relative;
+    letter-spacing: 0.03em;
+}
+
+.profile-content p::before {
+    content: "✦";
+    position: absolute;
+    left: -0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(155, 169, 185, 0.7);
+    font-size: 0.9em;
+}
+
+.profile-content p:nth-child(odd) {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 1.15rem;
+}
+
+.profile-content p:nth-child(even) {
+    font-style: italic;
+    color: #6c757d;
+    opacity: 0.95;
+    margin-bottom: 1.8em;
+}
+
+/* 自适应手机端 */
+@media (max-width: 768px) {
+    .profile-content {
+        padding: 15px;
+    }
+    .profile-content p {
+        font-size: 1rem;
+        padding-left: 1.2rem;
+    }
+    .profile-content p::before {
+        left: -0.5rem;
+    }
+}
