@@ -1,3 +1,116 @@
+// ====== 开场动画管理器 ======
+const IntroManager = {
+  lines: [
+    "凌晨，你emo了...",
+    "打开了音乐软件",
+    "这时，窗外正下着雨......",
+    "你 没有找人倾诉",
+    "因为...你不信任任何人",
+    "又或许是..你找不到Ta了...",
+  ],
+  
+  // 动画时间控制配置
+  timing: {
+    fadeIn: 2000,      // 淡入时间1秒
+    stayDuration: 4000, // 显示停留5秒
+    fadeOut:2000,      // 淡出时间0.5秒
+    betweenLines: 1000, // 行间间隔0.5秒
+    finalDelay: 1500    // 全部结束后等待2秒
+  },
+
+  init() {
+    // 检查是否已经显示过开场动画
+    const hasSeenIntro = localStorage.getItem('hasSeenIntro');
+    if (hasSeenIntro) {
+      this.skipIntro();
+      return;
+    }ddd
+
+    this.createIntroScreen();
+    this.animateLines();
+  },
+
+  createIntroScreen() {
+    const introScreen = document.createElement('div');
+    introScreen.className = 'intro-screen';
+    
+    const textContainer = document.createElement('div');
+    textContainer.className = 'intro-text-container';
+    
+    // 所有行文字都放在同一个容器中重叠显示
+    this.lines.forEach((line) => {
+      const lineElement = document.createElement('div');
+      lineElement.className = 'intro-line';
+      lineElement.textContent = line;
+      textContainer.appendChild(lineElement);
+    });
+    
+    introScreen.appendChild(textContainer);
+    document.body.appendChild(introScreen);
+    this.introScreen = introScreen;
+  },
+
+  animateLines() {
+    const lines = document.querySelectorAll('.intro-line');
+    let currentIndex = 0;
+    
+    const showNextLine = () => {
+      // 如果是最后一行，触发结束流程
+      if (currentIndex >= this.lines.length) {
+        setTimeout(() => {
+          this.completeIntro();
+        }, this.timing.finalDelay);
+        return;
+      }
+      
+      // 显示当前行
+      const line = lines[currentIndex];
+      line.classList.add('visible');
+      
+      // 设置定时器来隐藏当前行并显示下一行
+      setTimeout(() => {
+        // 隐藏当前行
+        line.classList.remove('visible');
+        
+        // 移动到下一行
+        currentIndex++;
+        
+        // 设置行间间隔
+        setTimeout(showNextLine, this.timing.betweenLines);
+      }, this.timing.stayDuration + this.timing.fadeIn);
+    };
+    
+    // 开始动画
+    showNextLine();
+  },
+
+  completeIntro() {
+    this.introScreen.classList.add('hidden');
+    
+    // 动画完全结束后移除元素
+    setTimeout(() => {
+      this.introScreen.remove();
+      
+      // 初始化主应用
+      app.init();
+      history.load();
+      
+      // 标记为已显示
+      localStorage.setItem('hasSeenIntro', 'true');
+    }, 2000); // 淡出效果时间
+  },
+
+  skipIntro() {
+    // 直接加载样式和初始化应用
+    const styleLink = document.createElement('link');
+    styleLink.rel = 'stylesheet';
+    styleLink.href = 'style.css';
+    document.head.appendChild(styleLink);
+    
+    app.init();
+  }
+};
+
 // =========== 流星管理器 ===========
 const MeteorManager = {
   meteors: [],
@@ -460,7 +573,7 @@ const app = {
     this.showInitialPrompt(); 
     
     // 自动播放背景音乐处理
-    document.body.addEventListener('click', this.playBackgroundMusic, { once: true });
+    //document.body.addEventListener('click', this.playBackgroundMusic, { once: true });
   },
 
   // 事件监听初始化
@@ -976,7 +1089,7 @@ const app = {
   // =========== 欢迎信息 ===========
   addWelcomeMessage() {
     const welcomeMessages = [
-      `欢迎使用AI角色聊天！当前角色: ${state.roles[state.currentRole].name}`,
+      `欢迎回来,当前角色: ${state.roles[state.currentRole].name}`,
       
     ];
     
@@ -1223,6 +1336,12 @@ let isInitialized = false;
 app.init = async function() {
   if (isInitialized) return;
   isInitialized = true;
+  // 首先加载样式
+  const styleLink = document.createElement('link');
+  styleLink.rel = 'stylesheet';
+  styleLink.href = 'style.css';
+  document.head.appendChild(styleLink);
+  
   // 初始化星空管理器
   StarsManager.init();
   MeteorManager.init();
@@ -1267,7 +1386,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       };
       check();
     });
-    
+     // 启动开场动画
+    IntroManager.init();
     // 初始化所有管理器
     FireflyManager.init();
     StarsManager.init();
