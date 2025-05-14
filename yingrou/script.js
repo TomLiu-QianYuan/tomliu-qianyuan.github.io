@@ -198,34 +198,45 @@ const history = {
   // 从本地存储加载
   load() {
     const saved = localStorage.getItem('chatHistory');
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-        state.currentRole = data.currentRole || state.currentRole;
-        if (data.messages?.length > 0) {
-          DOM.chatContainer.innerHTML = '';
-          data.messages.forEach(msg => {
-            this.addMessage(msg.text, msg.type, true); // 静默添加
+    if (!saved) return;
+    
+    try {
+      const data = JSON.parse(saved);
+      // 清空现有数据
+      DOM.chatContainer.innerHTML = '';
+      state.chatHistory = [];
+      
+      // 加载每条消息
+      data.messages.forEach(msg => {
+        this.addMessage(msg.text, msg.type, true);
+        // 同步到内存历史记录
+        if (msg.type !== 'system-message') {
+          state.chatHistory.push({
+            role: msg.type === 'user-message' ? 'user' : 'assistant',
+            content: msg.text
           });
         }
-      } catch (e) {
-        console.error('加载历史记录失败:', e);
-      }
+      });
+    } catch(e) {
+      console.error('加载历史记录失败:', e);
     }
   },
 
   // 保存到本地存储
   save() {
     const messages = Array.from(DOM.chatContainer.querySelectorAll('.message'))
+      .filter(el => !el.classList.contains('system-message'))
+      
       .map(el => ({
-        text: el.textContent,
-        type: el.classList.contains('user-message') ? 'user-message' : 
-              el.classList.contains('bot-message') ? 'bot-message' : 'system-message'
+          text: el.textContent.trim()
+          .replace(/\s+/g, ' ')  // 清理空格
+          .replace(/\n+/g, ' '), // 清理换行
+          type: el.className.replace('message ', '')
       }));
     
+    // 保存时将自动修剪
     localStorage.setItem('chatHistory', JSON.stringify({
-      currentRole: state.currentRole,
-      messages
+      messages: messages.slice(-100) // 硬限制50对
     }));
   },
 
@@ -243,6 +254,8 @@ const history = {
 
 // =========== 状态管理 ===========
 const state = {
+  chatHistory : [],
+  maxHistory:50,
   isMusicPlaying: false,
   audioPlayer: new Audio(),
   isListening: false,
@@ -452,15 +465,16 @@ const app = {
 
   // 事件监听初始化
   initEventListeners() {
-    // 消息发送
-    DOM.sendBtn.addEventListener('click', this.sendMessage.bind(this));
-    DOM.messageInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') this.sendMessage();
+   // 只保留一个回车事件监听
+    DOM.messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        this.sendMessage();
+      }
     });
-
+    DOM.sendBtn.addEventListener('click', this.sendMessage.bind(this));
     // 语音输入
     DOM.voiceBtn.addEventListener('click', this.toggleVoiceRecognition.bind(this));
-
     // 清空聊天
     DOM.forgetBtn.addEventListener('click', () => {
       if (confirm('确定要清空所有聊天记录吗？')) {
@@ -516,6 +530,21 @@ const app = {
     }
   },
 
+  getContextMessages() {
+    try {
+      const elements = Array.from(DOM.chatContainer.querySelectorAll('.message:not(.system-message)'));
+      return elements.slice(-state.maxHistory * 2).map(el => {
+        if (!el || !el.classList) return null;
+        return {
+          role: el.classList.contains('user-message') ? 'user' : 'assistant',
+          content: el.textContent || ''
+        };
+      }).filter(Boolean);
+    } catch (error) {
+      console.error('获取上下文消息失败:', error);
+      return [];
+    }
+  },
 
   // 渲染角色列表
   renderRoleList() {
@@ -613,47 +642,75 @@ const app = {
     DOM.roleDropdown.classList.remove('show');
   },
 
+  // ====== 修改app对象中的核心方法 ======
   // 发送消息
   async sendMessage() {
     const message = DOM.messageInput.value.trim();
     if (!message) return;
-    
-    // 用户消息
+    // 检查是否是重复的最后一条消息
+    const lastMessages = DOM.chatContainer.querySelectorAll('.message');
+    if (lastMessages.length > 0) {
+      const lastMessage = lastMessages[lastMessages.length - 1];
+      if (lastMessage.classList.contains('user-message') && 
+          lastMessage.textContent.trim() === message) {
+        console.log('检测到重复消息，不发送');
+        return;
+      }
+    }
+    // 添加用户消息到DOM
     this.addMessage(message, 'user-message');
     DOM.messageInput.value = '';
-  
-    // 立即创建萤火虫（用户发送时）
-    this.createFireflies(3, state.roles[state.currentRole].color); // ✨ 新增
-
+    
     // 显示"思考中"状态
-    const loadingMsg = this.createLoadingMessage();
-    DOM.chatContainer.appendChild(loadingMsg);
-    DOM.chatContainer.scrollTop = DOM.chatContainer.scrollHeight;
-
+    const loadingElement = this.createLoadingMessage();
+    DOM.chatContainer.appendChild(loadingElement);
+    scrollToBottom();
     try {
+      // 获取上下文消息（包含历史）
+      const contextMessages = this.getContextMessages();
+      
       // 获取AI响应
-      const response = await this.getAIResponse(message, state.currentRole);
+      const response = await this.getAIResponse(contextMessages, message);
       
-      // 显示响应
-      loadingMsg.remove();
+      // 添加AI响应
+      loadingElement.remove();
       this.addMessage(response, 'bot-message');
-      setTimeout(scrollToBottom, 50);
+      scrollToBottom();
       
-      // 添加特效
-      this.createFireflies(3, state.roles[state.currentRole].color);
+      // 保存并修剪历史
+      history.save();
+      this.trimHistory();
+      
+      // 触发特效
+      StarsManager.recordMessage();
+      const lastUserMsg = DOM.chatContainer.querySelector('.user-message:last-child');
+      const lastBotMsg = DOM.chatContainer.querySelector('.bot-message:last-child');
+      if (lastUserMsg) FireflyManager.createFireflies('user-message', lastUserMsg);
+      if (lastBotMsg) FireflyManager.createFireflies('bot-message', lastBotMsg);
+      
+      // 更新内存中的历史记录
+      state.chatHistory.push(
+        { role: 'user', content: message },
+        { role: 'assistant', content: response }
+      );
     } catch (error) {
       console.error('发送消息失败:', error);
-      loadingMsg.remove();
-      this.addMessage('回复生成失败，请稍后再试', 'bot-message');
+      loadingElement.remove();
+      this.addMessage('请求失败，请检查网络后重试', 'system-message');
     }
   },
 
   // 获取AI响应
-  async getAIResponse(message, roleId) {
-    const currentRole = state.roles[roleId];
-    let rolePrompt = '';
+  
+  async getAIResponse(contextMessages, newMessage) {
+    const cleanedMessage = newMessage
+      .replace(/\s+/g, ' ')
+      .replace(/\n+/g, ' ')
+      .trim();
     
-    // 加载角色提示词
+    const currentRole = state.roles[state.currentRole];
+    let rolePrompt = '你是一个AI助手，请用中文友好地回答用户问题。';
+    
     try {
       if (currentRole.promptPath) {
         const response = await fetch(currentRole.promptPath);
@@ -662,29 +719,49 @@ const app = {
     } catch (err) {
       console.error('加载角色提示失败:', err);
     }
-
-    // 实际API请求
-    const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer sk-bdtmxzzsokfgufqlxrzjdvfbtwccfreafooqiefglkirsdtp',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: "deepseek-ai/DeepSeek-V3",
-        messages: [
-          { role: "system", content: rolePrompt || currentRole.name },
-          { role: "user", content: message }
-        ],
-        temperature: 0.7,
-        max_tokens: 512
-      })
-    });
-
-    if (!response.ok) throw new Error(`API请求失败: ${response.status}`);
     
-    const data = await response.json();
-    return data?.choices?.[0]?.message?.content || '我无法回应这个问题...';
+    const messages = [
+      { role: "system", content: rolePrompt },
+      ...contextMessages.filter(msg => msg.content.trim()),
+      { role: "user", content: cleanedMessage }
+    ];
+    
+    console.log('Sending request:', messages); // 调试日志
+    
+    try {
+      const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer sk-bdtmxzzsokfgufqlxrzjdvfbtwccfreafooqiefglkirsdtp',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: "deepseek-ai/DeepSeek-V3",
+          messages: messages,
+          temperature: 0.7,
+          max_tokens: 512
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`API请求失败: ${response.status} - ${errorData.message || ''}`);
+      }
+      
+      const data = await response.json();
+      console.log('Received response:', data); // 调试日志
+      
+      const reply = data?.choices?.[0]?.message?.content;
+      
+      if (!reply || !reply.trim()) {
+        throw new Error('AI返回了空响应');
+      }
+      
+      return reply;
+    } catch (error) {
+      console.error('API请求错误:', error);
+      throw error;
+    }
   },
 
   // 语音识别功能
@@ -911,43 +988,82 @@ const app = {
   }
 };
 
+// ====== 获取上下文消息 ======
+app.getContextMessages = function() {
+  // 从DOM读取消息 (确保不超过最大限制)
+  const elements = Array.from(DOM.chatContainer.querySelectorAll('.message:not(.system-message)'));
+  const messages = elements.slice(-state.maxHistory * 2); // 保留最后50对
+  
+  // 转换为API需要的格式
+  return messages.map(el => ({
+    role: el.classList.contains('user-message') ? 'user' : 'assistant',
+    content: el.textContent
+  }));
+}
+// ====== 修剪历史消息 ======
+app.trimHistory = function() {
+  const messages = DOM.chatContainer.querySelectorAll('.message:not(.system-message)');
+  if(messages.length > state.maxHistory * 2) {
+    // 删除最早的一对消息
+    messages[0].remove();
+    messages[1].remove();
+    
+    // 同步更新内存中的历史记录
+    state.chatHistory = state.chatHistory.slice(2);
+  }
+}
 
 // ====== 修改消息发送逻辑 ======
 app.sendMessage = async function() {
+  let message = DOM.messageInput.value.trim(); // 使用 let 而不是 const
   
-  const message = DOM.messageInput.value.trim();
+  // 添加消息预处理
+  message = message
+    .replace(/\s+/g, ' ')
+    .replace(/\n+/g, ' ')
+    .trim();
+
   if (!message) return;
-  
-  // 记录消息(影响星星亮度)
-  StarsManager.recordMessage();
-  
-  // 用户消息
-  const userMsgElement = this.createMessageElement(message, 'user-message');
-  DOM.chatContainer.appendChild(userMsgElement);
+
+  // 添加用户消息到DOM
+  this.addMessage(message, 'user-message');
   DOM.messageInput.value = '';
   
-  // 触发用户萤火虫
-  FireflyManager.createFireflies('user-message', userMsgElement);
-
   // 显示"思考中"状态
-  const loadingMsg = this.createLoadingMessage();
-  DOM.chatContainer.appendChild(loadingMsg);
-  DOM.chatContainer.scrollTop = DOM.chatContainer.scrollHeight;
-  
+  const loadingElement = this.createLoadingMessage();
+  DOM.chatContainer.appendChild(loadingElement);
+  scrollToBottom();
+
   try {
-    const response = await this.getAIResponse(message, state.currentRole);
-    loadingMsg.remove();
+    const contextMessages = this.getContextMessages();
+    const response = await this.getAIResponse(contextMessages, message);
     
-    const botMsg = this.createMessageElement(response, 'bot-message');
-    DOM.chatContainer.appendChild(botMsg);
-    FireflyManager.createFireflies('bot-message', botMsg);
+    loadingElement.remove();
+    this.addMessage(response, 'bot-message');
     
-    // 自动保存历史记录（不包含系统消息）
+    // 修剪历史记录
+    this.trimHistory();
     history.save();
+    
+    // 触发特效
+    StarsManager.recordMessage();
+    const lastUserMsg = DOM.chatContainer.querySelector('.user-message:last-child');
+    const lastBotMsg = DOM.chatContainer.querySelector('.bot-message:last-child');
+    if (lastUserMsg) FireflyManager.createFireflies('user-message', lastUserMsg);
+    if (lastBotMsg) FireflyManager.createFireflies('bot-message', lastBotMsg);
+    
+    // 更新内存历史
+    state.chatHistory.push(
+      { role: 'user', content: message },
+      { role: 'assistant', content: response }
+    );
   } catch (error) {
-    // 错误处理...
+    console.error('发送失败:', error);
+    loadingElement.remove();
+    this.addMessage('请求失败，请检查网络', 'system-message');
   }
 };
+
 
 // ====== 修改消息元素创建 ======
 app.createMessageElement = function(text, type) {
@@ -1102,9 +1218,11 @@ app.addMusicControlButton = function() {
     container.insertBefore(musicBtn, container.firstChild);
   }
 };
-
+let isInitialized = false;
 // 修改初始化部分
 app.init = async function() {
+  if (isInitialized) return;
+  isInitialized = true;
   // 初始化星空管理器
   StarsManager.init();
   MeteorManager.init();
