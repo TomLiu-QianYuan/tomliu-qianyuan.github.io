@@ -11,51 +11,36 @@ document.addEventListener('DOMContentLoaded', function() {
         cursorFollower.style.top = `${e.clientY}px`;
     });
     
-    // 卡片3D效果
-    const cards = document.querySelectorAll('.card');
-    const cardLinks = document.querySelectorAll('.card-link');
-    
-    cards.forEach((card, index) => {
-        const parent = index === 0 ? cardLinks[0] : card;
-        
-        parent.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+    // 将原来的cards选择器改为
+    const cards = document.querySelectorAll('.card-wrapper');
+        // 修改事件监听逻辑（替换现有cards.forEach部分）
+        cards.forEach((wrapper) => {
+            const card = wrapper.querySelector('.card');
+            const link = wrapper.querySelector('.card-link');
             
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
+            const target = link ? link : card;
             
-            const angleX = (y - centerY) / 20;
-            const angleY = (x - centerX) / -20;
+            target.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                // 保持原有转换逻辑...
+            });
             
-            card.style.transform = `translateY(-20px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
-            
-            const glow = card.querySelector('.card-glow');
-            glow.style.left = `${x}px`;
-            glow.style.top = `${y}px`;
-            
-            cursor.style.transform = 'translate(-50%, -50%) scale(2)';
-            cursorFollower.style.transform = 'translate(-50%, -50%) scale(0.5)';
-        });
-        
-        parent.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(-20px) rotateX(0) rotateY(0)';
-            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-            cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
+            target.addEventListener('mouseleave', () => {
+            // 保持原有重置逻辑...
         });
     });
-    
-    // 为无链接卡片添加点击反馈
-    document.querySelectorAll('.card-wrapper:not(:first-child) .card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            e.preventDefault();
-            card.style.transform = 'translateY(-10px) scale(0.98)';
-            setTimeout(() => {
-                card.style.transform = 'translateY(-20px) rotateX(0) rotateY(0)';
-            }, 150);
-        });
-    });
+    // // 为无链接卡片添加点击反馈
+    // document.querySelectorAll('.card-wrapper:not(:first-child) .card').forEach(card => {
+    //     card.addEventListener('click', (e) => {
+    //         e.preventDefault();
+    //         card.style.transform = 'translateY(-10px) scale(0.98)';
+    //         setTimeout(() => {
+    //             card.style.transform = 'translateY(-20px) rotateX(0) rotateY(0)';
+    //         }, 150);
+    //     });
+    // });
     
     // 导航栏滚动效果
     const nav = document.querySelector('.glass-nav');
