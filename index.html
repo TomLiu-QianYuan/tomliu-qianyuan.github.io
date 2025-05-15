@@ -9,21 +9,32 @@
 </head>
 <body>
     <div class="dynamic-bg"></div>
-    
-    <div class="nav-container">
-        <nav class="glass-nav">
-            <div class="nav-logo-container">
-                <a href="#" class="nav-logo">TomLiu</a>
-                <span class="nav-subtitle">梦中悟 · 无边众生誓愿度 · 万物与我齐一</span>
-            </div>
-            <div class="nav-links">
-                <a href="#">关于</a>
-                <a href="#">修行</a>
-                <a href="#">宇宙</a>
-            </div>
-        </nav>
+       <nav class="glass-nav">
+    <div class="nav-logo-container">
+        <a href="#" class="nav-logo">TomLiu</a>
+        <span class="nav-subtitle">梦中悟 · 无边众生誓愿度 · 万物与我齐一</span>
+    </div>
+    <div class="nav-links">
+        <a href="#">关于</a>
+        <a href="#">修行</a>
+        <a href="#">宇宙</a>
     </div>
 
+    <!-- 添加语言切换和位置显示容器 -->
+            <div class="nav-utils">
+                <div class="location-container">
+                    <span class="location-icon">📍</span>
+                    <span id="current-location">获取位置中...</span>
+                </div>
+                <div class="language-toggle">
+                    <button class="language-btn active" id="toggle-zh">中</button>
+                    <span>/</span>
+                    <button class="language-btn" id="toggle-en">EN</button>
+                </div>
+            </div>
+    <!-- 语言切换按钮和位置显示将通过JavaScript动态添加在这里 -->
+</nav> 
+    </nav>
     <main>
         <!-- 替换 hero-section 部分 -->
         <section class="hero-section">

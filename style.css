@@ -845,3 +845,175 @@ body {
         transform: none !important;
     }
 }
+
+/* 语言切换按钮样式 */
+.language-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 2rem;
+}
+
+.language-btn {
+    background: transparent;
+    border: none;
+    color: var(--light-text);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    transition: var(--transition);
+    position: relative;
+}
+
+.language-btn:hover {
+    color: var(--text);
+}
+
+.language-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: var(--transition);
+}
+
+.language-btn:hover::after {
+    width: 100%;
+}
+
+.language-toggle span {
+    color: var(--light-text);
+    opacity: 0.5;
+}
+
+/* 响应式设计调整 */
+@media (max-width: 768px) {
+    .language-toggle {
+        margin: 1rem 0 0 0;
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+/* 位置显示样式 */
+.location-container {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    padding-left: 2rem;
+    color: var(--light-text);
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.location-icon {
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+#current-location {
+    transition: var(--transition);
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 响应式设计调整 */
+@media (max-width: 1024px) {
+    .location-container {
+        padding-left: 1rem;
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .location-container {
+        order: -1;
+        width: 100%;
+        justify-content: flex-end;
+        margin: 0.5rem 0;
+        padding-left: 0;
+        max-width: none;
+    }
+    
+    .glass-nav {
+        flex-wrap: wrap;
+    }
+}
+
+/* 导航工具容器 */
+.nav-utils {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 2rem;
+}
+
+/* 语言切换按钮样式 */
+.language-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.language-btn {
+    background: transparent;
+    border: none;
+    color: var(--light-text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    transition: var(--transition);
+    position: relative;
+}
+
+.language-btn.active {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.language-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: var(--transition);
+}
+
+.language-btn:hover::after {
+    width: 100%;
+}
+
+.language-toggle span {
+    color: var(--light-text);
+    opacity: 0.5;
+}
+
+/* 响应式调整 */
+@media (max-width: 1024px) {
+    .nav-utils {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-utils {
+        order: 3;
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }
+    
+    .location-container {
+        margin-right: auto;
+    }
+}
