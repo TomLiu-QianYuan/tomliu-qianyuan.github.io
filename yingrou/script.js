@@ -1384,6 +1384,7 @@ app.init = async function() {
 // 修改启动代码
 document.addEventListener('DOMContentLoaded', async () => {
   try {
+
     // 确保所有DOM元素已经加载
     await new Promise(resolve => {
       const check = () => {
@@ -1397,7 +1398,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       check();
     });
      // 启动开场动画
-    IntroManager.init();
     // 初始化所有管理器
     FireflyManager.init();
     StarsManager.init();
@@ -1406,6 +1406,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 启动应用
     await app.init();
     history.load();
+    const hasSeenIntro = localStorage.getItem('hasSeenIntro');
+    if (!hasSeenIntro) {
+		setTimeout(() => {
+			app.addSystemMessage("你可以使用聊天框和荧柔/雪雅聊天哦");
+		}, 2000); // 100ms 防抖		
+    }
+    localStorage.setItem('hasSeenIntro', 'true');
     
     console.log('应用初始化完成');
   } catch (error) {
