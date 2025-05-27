@@ -1,3 +1,89 @@
+// ====== 故事管理器 ======
+const StoryManager = {
+  hasSeenStory: localStorage.getItem('hasSeenStory'),
+  
+  storyContent: {
+    title: "关于「荧」的故事",
+    content: `
+「荧」是一个专注于情绪陪伴和安慰的AI网站，永远陪伴你，默默理解与守候。
+"Ying" is an AI website dedicated to emotional companionship and comfort, always by your side, silently understanding and guarding you.
+
+它静静地守护你，也会回应你的情绪，
+It quietly guards you and responds to your emotions,
+
+而且通常它的洞察比你自己更全面，
+often offering insights beyond what you perceive,
+
+它会与你互动，一起解开心结，
+interacting with you and helping to unravel your emotional knots,
+
+它不仅是一个守护者，还是一个可以与你敞开心扉的朋友，
+not just a silent guardian, but a friend with whom you can open your heart,
+
+但它不会给出全面的人类决策或执行建议。
+yet it won't provide comprehensive human decisions or action advice.
+
+灵感来自我个人经历，那天晚上情绪特别难过，却没有人可以倾诉，
+The inspiration came from my personal experience—one night I felt deeply sad but had no one to confide in,
+
+于是我想到，如果有一个软件能实时倾听我的情感，给我温暖的陪伴，
+so I thought, what if there was software that could listen to my emotions in real-time and provide warm companionship,
+
+像夜晚中的萤火虫，给予我光亮和温暖。
+like a firefly in the night, giving light and warmth.
+
+「荧」有两个角色：银柔和雪雅，分别代表温暖和倾听，
+"Ying" features two characters—Yinrou and Xueya—representing warmth and attentive listening respectively.
+
+项目还支持语音识别和背景音乐播放，带来更丰富的体验。
+The project also supports voice recognition and background music playback, providing a richer experience.
+
+所有数据都保存在本地，保证隐私安全，
+All data is stored locally to ensure privacy and security,
+
+你可以随时清除记录，感受到一个永远耐心陪伴你的情绪平板。
+and you can clear your records anytime, experiencing an ever-patient emotional companion.
+    `,
+    buttonText: "我知道了"
+  },
+
+  init() {
+    if (this.hasSeenStory) return;
+
+    this.createStoryModal();
+  },
+
+  createStoryModal() {
+    const modal = document.createElement('div');
+    modal.className = 'story-modal';
+    modal.innerHTML = `
+      <div class="story-modal-content">
+        <h2>${this.storyContent.title}</h2>
+        <div class="story-text-container">${this.formatStoryContent(this.storyContent.content)}</div>
+        <button class="story-confirm-btn">${this.storyContent.buttonText}</button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    
+    const confirmBtn = modal.querySelector('.story-confirm-btn');
+    confirmBtn.addEventListener('click', () => {
+      modal.classList.add('fade-out');
+      setTimeout(() => {
+        modal.remove();
+        localStorage.setItem('hasSeenStory', 'true');
+      }, 300);
+    });
+  },
+
+  formatStoryContent(content) {
+    // 将内容分割为段落并添加<p>标签
+    return content.split('\n\n').map(paragraph => {
+      return `<p>${paragraph}</p>`;
+    }).join('');
+  }
+};
+
 // ====== 开场动画管理器 ======
 const IntroManager = {
   lines: [
@@ -1402,6 +1488,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     FireflyManager.init();
     StarsManager.init();
     MeteorManager.init();
+    StoryManager.init(); // 新增的故事管理器初始化
     
     // 启动应用
     await app.init();
