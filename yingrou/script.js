@@ -32,8 +32,8 @@ so I thought, what if there was software that could listen to my emotions in rea
 像夜晚中的萤火虫，给予我光亮和温暖。
 like a firefly in the night, giving light and warmth.
 
-「荧」有两个角色：银柔和雪雅，分别代表温暖和倾听，
-"Ying" features two characters—Yinrou and Xueya—representing warmth and attentive listening respectively.
+「荧」有两个角色：荧柔和雪雅，分别代表温暖和倾听，
+"Ying" features two characters—Yingrou and Xueya—representing warmth and attentive listening respectively.
 
 项目还支持语音识别和背景音乐播放，带来更丰富的体验。
 The project also supports voice recognition and background music playback, providing a richer experience.
