@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>熊MJ(CarolXiong) - 个人主页</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,26 +14,63 @@
         }
         
         :root {
-            --primary: #6ec6ca;
-            --secondary: #a5d6d9;
-            --accent: #ff9a8b;
-            --dark: #3a506b;
-            --light: #f8f9fa;
-            --text: #333333;
+            --primary: #8ECAE6;
+            --secondary: #219EBC;
+            --accent: #FFB703;
+            --dark: #023047;
+            --light: #FB8500;
+            --text: #2B2D42;
+            --light-blue: #CAF0F8;
+            --sky-blue: #90E0EF;
+            --ocean-blue: #00B4D8;
             --shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
         
         body {
             font-family: 'Raleway', sans-serif;
-            line-height: 1.6;
+            line-height: 1.7;
             color: var(--text);
-            background: linear-gradient(135deg, #f0f7fa 0%, #e6f4f1 100%);
+            background: linear-gradient(135deg, #e0f7ff 0%, #caf0f8 100%);
             background-attachment: fixed;
             overflow-x: hidden;
-            transition: background 0.5s ease;
+            position: relative;
+            min-height: 100vh;
         }
         
-        /* 语言切换按钮 */
+        /* 背景动画 */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(142, 202, 230, 0.2);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        /* 语言切换器 */
         .language-switcher {
             position: fixed;
             top: 20px;
@@ -54,6 +91,7 @@
             align-items: center;
             font-size: 0.85rem;
             color: var(--dark);
+            font-weight: 500;
         }
         
         .location-indicator i {
@@ -62,7 +100,7 @@
         }
         
         .lang-btn {
-            background: var(--primary);
+            background: var(--ocean-blue);
             color: white;
             border: none;
             border-radius: 15px;
@@ -79,12 +117,13 @@
         }
         
         header {
-            background: linear-gradient(120deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(120deg, var(--primary) 0%, var(--sky-blue) 100%);
             color: white;
             text-align: center;
             padding: 5rem 2rem 7rem;
             position: relative;
             overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
         }
         
         header::before {
@@ -104,58 +143,67 @@
             z-index: 2;
             max-width: 900px;
             margin: 0 auto;
+            animation: fadeInDown 1s ease-out;
         }
         
         .profile-pic {
-            width: 150px;
-            height: 150px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
-            border: 5px solid white;
+            border: 5px solid rgba(255, 255, 255, 0.8);
             margin: 0 auto 1.5rem;
-            background: #e0f7fa;
+            background: var(--light-blue);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            box-shadow: var(--shadow);
+            box-shadow: 0 15px 35px rgba(33, 158, 188, 0.3);
+            animation: pulse 2s infinite;
         }
         
         .profile-pic i {
             font-size: 5rem;
-            color: var(--primary);
+            color: var(--secondary);
         }
         
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             font-family: 'Quicksand', sans-serif;
             font-weight: 700;
         }
         
         h1 {
-            font-size: 3rem;
+            font-size: 3.2rem;
             margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, var(--dark), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .subtitle {
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
-            opacity: 0.9;
+            color: var(--dark);
+            font-weight: 600;
         }
         
         .tagline {
             font-size: 1.2rem;
             max-width: 600px;
             margin: 0 auto 2rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 1rem;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 1rem 1.5rem;
             border-radius: 20px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: var(--dark);
+            font-weight: 500;
         }
         
         .container {
             max-width: 1200px;
             margin: -4rem auto 0;
-            padding: 0 2rem;
+            padding: 0 2rem 4rem;
             position: relative;
         }
         
@@ -167,20 +215,23 @@
         }
         
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.85);
             border-radius: 20px;
             overflow: hidden;
             box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
         
         .card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 15px 40px rgba(33, 158, 188, 0.2);
+            background: rgba(255, 255, 255, 0.95);
         }
         
         .card-header {
-            background: var(--primary);
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             padding: 1.5rem;
             text-align: center;
@@ -194,30 +245,38 @@
             text-align: center;
             margin: 4rem 0 2rem;
             color: var(--dark);
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             position: relative;
+            padding-bottom: 0.5rem;
         }
         
         .section-title::after {
             content: "";
             display: block;
-            width: 80px;
-            height: 4px;
+            width: 100px;
+            height: 5px;
             background: var(--accent);
             margin: 0.8rem auto;
-            border-radius: 2px;
+            border-radius: 10px;
         }
         
         .info-item {
             display: flex;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
             align-items: flex-start;
+            padding: 1rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .info-item:hover {
+            background: rgba(142, 202, 230, 0.1);
         }
         
         .info-item i {
-            color: var(--primary);
-            font-size: 1.4rem;
-            min-width: 40px;
+            color: var(--secondary);
+            font-size: 1.6rem;
+            min-width: 50px;
             padding-top: 3px;
         }
         
@@ -235,21 +294,26 @@
         
         .interest {
             text-align: center;
-            padding: 1.5rem 1rem;
-            background: rgba(165, 214, 217, 0.15);
+            padding: 1.8rem 1rem;
+            background: rgba(202, 240, 248, 0.4);
             border-radius: 15px;
             transition: all 0.3s ease;
+            border: 1px solid rgba(142, 202, 230, 0.3);
         }
         
         .interest:hover {
-            background: rgba(165, 214, 217, 0.3);
-            transform: scale(1.05);
+            background: rgba(142, 202, 230, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(33, 158, 188, 0.1);
         }
         
         .interest i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
+            font-size: 2.8rem;
+            color: var(--secondary);
+            margin-bottom: 1.2rem;
+            background: linear-gradient(45deg, var(--primary), var(--ocean-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .cat-section {
@@ -257,24 +321,47 @@
             align-items: center;
             gap: 2rem;
             margin: 3rem 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
         
         .cat-image {
             flex: 1;
             min-width: 250px;
             height: 250px;
-            background: linear-gradient(135deg, var(--secondary) 0%, #c5e1e5 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--sky-blue) 100%);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .cat-image::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+            mix-blend-mode: multiply;
         }
         
         .cat-image i {
             font-size: 8rem;
             color: white;
             opacity: 0.8;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
         
         .cat-info {
@@ -283,11 +370,17 @@
         
         .project-card {
             margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: white;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            border-left: 4px solid var(--primary);
+            border-left: 5px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(33, 158, 188, 0.15);
         }
         
         .project-card h3 {
@@ -300,26 +393,30 @@
         .project-card h3 i {
             color: var(--accent);
             margin-right: 10px;
+            font-size: 1.5rem;
         }
         
         .project-card .date {
-            color: var(--primary);
+            color: var(--secondary);
             font-weight: 600;
             margin-bottom: 0.8rem;
             display: block;
+            font-size: 1.1rem;
         }
         
         .weather-section {
-            background: linear-gradient(135deg, var(--dark) 0%, #1c2541 100%);
+            background: linear-gradient(135deg, var(--dark) 0%, var(--secondary) 100%);
             color: white;
             padding: 3rem 2rem;
             border-radius: 20px;
             margin: 3rem 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         
         .weather-icon {
-            font-size: 4rem;
+            font-size: 5rem;
             margin-bottom: 1.5rem;
             animation: float 3s ease-in-out infinite;
         }
@@ -334,34 +431,37 @@
         .achievements {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            gap: 1.8rem;
             margin-top: 2rem;
         }
         
         .achievement-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
-            padding: 1.5rem;
+            padding: 1.8rem;
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
         
         .achievement-card:hover {
-            transform: translateY(-5px);
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(33, 158, 188, 0.2);
         }
         
         .medal {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 1.5rem;
+            margin-right: 1.8rem;
             flex-shrink: 0;
-            font-size: 2rem;
+            font-size: 2.2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .gold { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #704214; }
@@ -369,8 +469,13 @@
         .bronze { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); color: #3d2600; }
         
         .achievement-info h4 {
-            font-size: 1.2rem;
-            margin-bottom: 0.3rem;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .achievement-info p {
+            color: var(--text);
         }
         
         footer {
@@ -379,16 +484,44 @@
             text-align: center;
             padding: 3rem 2rem;
             margin-top: 4rem;
+            position: relative;
+            clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
         }
         
         .footer-content {
             max-width: 600px;
             margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
         
         .footer-content p {
             margin: 1.5rem 0;
-            opacity: 0.8;
+            opacity: 0.9;
+        }
+        
+        /* 动画 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(33, 158, 188, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(33, 158, 188, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(33, 158, 188, 0);
+            }
         }
         
         @media (max-width: 768px) {
@@ -397,7 +530,7 @@
             }
             
             h1 {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
             }
             
             .subtitle {
@@ -411,12 +544,19 @@
             
             .medal {
                 margin-right: 0;
-                margin-bottom: 1rem;
+                margin-bottom: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- 背景动画 -->
+    <div class="background-animation" id="bubbles"></div>
+    
     <!-- 语言切换器 -->
     <div class="language-switcher">
         <div class="location-indicator">
@@ -596,6 +736,36 @@
     </footer>
 
     <script>
+        // 创建背景动画
+        function createBubbles() {
+            const container = document.getElementById('bubbles');
+            const bubbleCount = 20;
+            
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                
+                // 随机大小
+                const size = Math.random() * 120 + 20;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                
+                // 随机位置
+                const posX = Math.random() * 100;
+                bubble.style.left = `${posX}%`;
+                
+                // 随机动画延迟
+                const delay = Math.random() * 15;
+                bubble.style.animationDelay = `${delay}s`;
+                
+                // 随机透明度
+                const opacity = 0.2 + Math.random() * 0.3;
+                bubble.style.opacity = opacity;
+                
+                container.appendChild(bubble);
+            }
+        }
+        
         // 多语言支持
         const translations = {
             cn: {
@@ -781,10 +951,11 @@
             document.documentElement.lang = lang === 'cn' ? 'zh-CN' : 'en';
         }
         
-        // 初始加载时设置语言
+        // 初始加载时设置语言和动画
         document.addEventListener('DOMContentLoaded', function() {
             const initialLang = detectLanguage();
             setLanguage(initialLang);
+            createBubbles();
             
             // 添加语言切换事件
             document.getElementById('lang-cn').addEventListener('click', function() {
