@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>熊MJ(CarolXiong) - 个人主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6ec6ca;
+            --secondary: #a5d6d9;
+            --accent: #ff9a8b;
+            --dark: #3a506b;
+            --light: #f8f9fa;
+            --text: #333333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        body {
+            font-family: 'Raleway', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: linear-gradient(135deg, #f0f7fa 0%, #e6f4f1 100%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+        
+        /* 语言切换按钮 */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 30px;
+            padding: 8px 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .location-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+        
+        .location-indicator i {
+            margin-right: 5px;
+            color: var(--accent);
+        }
+        
+        .lang-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 15px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-btn:hover {
+            background: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        header {
+            background: linear-gradient(120deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            text-align: center;
+            padding: 5rem 2rem 7rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,224L48,213.3C96,203,192,181,288,160C384,139,480,117,576,133.3C672,149,768,203,864,213.3C960,224,1056,192,1152,170.7C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: bottom;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 1.5rem;
+            background: #e0f7fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .profile-pic i {
+            font-size: 5rem;
+            color: var(--primary);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: -4rem auto 0;
+            padding: 0 2rem;
+            position: relative;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 4rem 0 2rem;
+            color: var(--dark);
+            font-size: 2.2rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            margin: 0.8rem auto;
+            border-radius: 2px;
+        }
+        
+        .info-item {
+            display: flex;
+            margin-bottom: 1.2rem;
+            align-items: flex-start;
+        }
+        
+        .info-item i {
+            color: var(--primary);
+            font-size: 1.4rem;
+            min-width: 40px;
+            padding-top: 3px;
+        }
+        
+        .info-content h3 {
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+        
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .interest {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: rgba(165, 214, 217, 0.15);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .interest:hover {
+            background: rgba(165, 214, 217, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .interest i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .cat-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .cat-image {
+            flex: 1;
+            min-width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, var(--secondary) 0%, #c5e1e5 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .cat-image i {
+            font-size: 8rem;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        .cat-info {
+            flex: 2;
+        }
+        
+        .project-card {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .project-card h3 {
+            color: var(--dark);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .project-card h3 i {
+            color: var(--accent);
+            margin-right: 10px;
+        }
+        
+        .project-card .date {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+        
+        .weather-section {
+            background: linear-gradient(135deg, var(--dark) 0%, #1c2541 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .weather-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* 成就徽章 */
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .achievement-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .medal {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+            font-size: 2rem;
+        }
+        
+        .gold { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); color: #704214; }
+        .silver { background: linear-gradient(135deg, #C0C0C0 0%, #A9A9A9 100%); color: #505050; }
+        .bronze { background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%); color: #3d2600; }
+        
+        .achievement-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-content p {
+            margin: 1.5rem 0;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .cat-section {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .achievement-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .medal {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 语言切换器 -->
+    <div class="language-switcher">
+        <div class="location-indicator">
+            <i class="fas fa-location-dot"></i>
+            <span id="location">成都, 中国</span>
+        </div>
+        <button class="lang-btn" id="lang-en">EN</button>
+        <button class="lang-btn" id="lang-cn">中文</button>
+    </div>
+    
+    <header>
+        <div class="header-content">
+            <div class="profile-pic">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1>熊MJ (CarolXiong)</h1>
+            <div class="subtitle">探索者 · 创造者 · 梦想家</div>
+            <div class="tagline">一个热爱数学与物理的服装设计师，在雨后微风中寻找灵感的成都女孩</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="card-grid">
+            <!-- 基本信息卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> 基本信息</h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <i class="fas fa-birthday-cake"></i>
+                        <div class="info-content">
+                            <h3>年龄与生日</h3>
+                            <p>17岁 · 2008年5月20日 (金牛座)</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="info-content">
+                            <h3>居住地</h3>
+                            <p>四川成都 · 中国</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-star"></i>
+                        <div class="info-content">
+                            <h3>性格特质</h3>
+                            <p>可爱的宅女 · 喜欢安静思考 · 在雨后微风中寻找灵感</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 兴趣与爱好卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-heart"></i> 热爱的事物</h2>
+                </div>
+                <div class="card-body">
+                    <div class="interests-grid">
+                        <div class="interest">
+                            <i class="fas fa-square-root-alt"></i>
+                            <h3>数学</h3>
+                            <p>探索数字与逻辑之美</p>
+                        </div>
+                        <div class="interest">
+                            <i class="fas fa-atom"></i>
+                            <h3>物理</h3>
+                            <p>理解宇宙运行的规律</p>
+                        </div>
+                        <div class="interest">
+                            <i class="fas fa-tshirt"></i>
+                            <h3>服装设计</h3>
+                            <p>创造美与功能的结合</p>
+                        </div>
+                        <div class="interest">
+                            <i class="fas fa-music"></i>
+                            <h3>Founk音乐</h3>
+                            <p>英语音乐激发创造力</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 学术成就部分 -->
+        <h2 class="section-title">学术成就</h2>
+        <div class="achievements">
+            <div class="achievement-card">
+                <div class="medal bronze">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="achievement-info">
+                    <h4>UKMT 全球铜牌</h4>
+                    <p>英国数学信托竞赛全球铜奖，并晋级BMO</p>
+                </div>
+            </div>
+            
+            <div class="achievement-card">
+                <div class="medal silver">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="achievement-info">
+                    <h4>AMC10 全亚洲银牌</h4>
+                    <p>美国数学竞赛10级别亚洲区银奖</p>
+                </div>
+            </div>
+            
+            <div class="achievement-card">
+                <div class="medal bronze">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="achievement-info">
+                    <h4>AMC12 全球铜牌</h4>
+                    <p>美国数学竞赛12级别全球铜奖</p>
+                </div>
+            </div>
+            
+            <div class="achievement-card">
+                <div class="medal silver">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="achievement-info">
+                    <h4>VEX机器人比赛全国二等奖</h4>
+                    <p>作为团队队长获得全国二等奖</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 宠物部分 -->
+        <h2 class="section-title">我的猫咪伙伴</h2>
+        <div class="cat-section">
+            <div class="cat-image">
+                <i class="fas fa-cat"></i>
+            </div>
+            <div class="cat-info">
+                <h3>我的小奶牛猫和她的家庭</h3>
+                <p>我有一只可爱的小奶牛猫，她最近成为了骄傲的妈妈！现在家里有一群活泼的小猫崽，每天回家都能看到它们玩耍的温馨场景。照顾这些小家伙让我学会了责任与耐心，也给我的生活带来了无尽的欢乐。</p>
+                <p>当我学习数学和物理遇到难题时，看着它们无忧无虑玩耍的样子总能让我放松心情，找到新的解题思路。</p>
+            </div>
+        </div>
+        
+        <!-- 项目与成就 -->
+        <h2 class="section-title">项目与成就</h2>
+        <div class="project-card">
+            <h3><i class="fas fa-hands-helping"></i> 为脑瘫孩子们带去温暖</h3>
+            <span class="date">2022年 - 2023年</span>
+            <p>作为志愿者团队的核心成员，我参与了为期一年的关爱脑瘫儿童项目。我们每周去康复中心陪伴孩子们，为他们设计适合的互动游戏和艺术活动。我还运用服装设计技能，为孩子们制作了舒适易穿的特殊服装。</p>
+            <p>这个经历让我深刻理解了同理心的重要性，也激发了我将技术与人文关怀结合的愿望。</p>
+        </div>
+        
+        <div class="project-card">
+            <h3><i class="fas fa-robot"></i> VEX机器人比赛全国二等奖</h3>
+            <span class="date">2023年</span>
+            <p>作为团队队长和机械设计负责人，我带领团队设计并制造了一台高效的VEX竞赛机器人。我负责机械结构设计和团队协调，运用物理知识和工程思维解决了多个技术难题。</p>
+            <p>在全国总决赛中，我们的机器人以稳定的性能和创新的设计赢得了评委的高度评价，最终获得全国二等奖。这次经历极大地提升了我的问题解决能力和团队领导力。</p>
+        </div>
+        
+        <!-- 天气偏好 -->
+        <div class="weather-section">
+            <div class="weather-icon">
+                <i class="fas fa-wind"></i>
+            </div>
+            <h2>雨后微风是我的灵感源泉</h2>
+            <p>我不太喜欢过于晴朗的天气，反而钟爱雨后的清新时刻。当微风拂过湿润的空气，带着泥土和青草的芬芳，我的思维会变得特别活跃。这种天气里，我常常带着笔记本到公园，在微风中思考数学问题，构思新的服装设计，或者只是静静地听Founk音乐。</p>
+            <p>对我来说，雨后刮风的天气代表着新的开始和无限可能。</p>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <h3>熊MJ (CarolXiong)</h3>
+            <p>一个在理性与创意之间寻找平衡的17岁探索者</p>
+            <p>数学与物理给我理解世界的工具 · 服装设计表达我的艺术视角 · 雨后微风带来无限灵感</p>
+            <p>期待在未来的学术旅程中创造更多价值！</p>
+        </div>
+    </footer>
+
+    <script>
+        // 多语言支持
+        const translations = {
+            cn: {
+                location: "成都, 中国",
+                name: "熊MJ (CarolXiong)",
+                subtitle: "探索者 · 创造者 · 梦想家",
+                tagline: "一个热爱数学与物理的服装设计师，在雨后微风中寻找灵感的成都女孩",
+                basicInfo: "基本信息",
+                age: "年龄与生日",
+                ageText: "17岁 · 2008年5月20日 (金牛座)",
+                locationTitle: "居住地",
+                locationText: "四川成都 · 中国",
+                traits: "性格特质",
+                traitsText: "可爱的宅女 · 喜欢安静思考 · 在雨后微风中寻找灵感",
+                interests: "热爱的事物",
+                math: "数学",
+                mathText: "探索数字与逻辑之美",
+                physics: "物理",
+                physicsText: "理解宇宙运行的规律",
+                fashion: "服装设计",
+                fashionText: "创造美与功能的结合",
+                music: "Founk音乐",
+                musicText: "英语音乐激发创造力",
+                achievements: "学术成就",
+                ukmt: "UKMT 全球铜牌",
+                ukmtText: "英国数学信托竞赛全球铜奖，并晋级BMO",
+                amc10: "AMC10 全亚洲银牌",
+                amc10Text: "美国数学竞赛10级别亚洲区银奖",
+                amc12: "AMC12 全球铜牌",
+                amc12Text: "美国数学竞赛12级别全球铜奖",
+                vex: "VEX机器人比赛全国二等奖",
+                vexText: "作为团队队长获得全国二等奖",
+                cats: "我的猫咪伙伴",
+                catsTitle: "我的小奶牛猫和她的家庭",
+                catsText1: "我有一只可爱的小奶牛猫，她最近成为了骄傲的妈妈！现在家里有一群活泼的小猫崽，每天回家都能看到它们玩耍的温馨场景。照顾这些小家伙让我学会了责任与耐心，也给我的生活带来了无尽的欢乐。",
+                catsText2: "当我学习数学和物理遇到难题时，看着它们无忧无虑玩耍的样子总能让我放松心情，找到新的解题思路。",
+                projects: "项目与成就",
+                charity: "为脑瘫孩子们带去温暖",
+                charityDate: "2022年 - 2023年",
+                charityText1: "作为志愿者团队的核心成员，我参与了为期一年的关爱脑瘫儿童项目。我们每周去康复中心陪伴孩子们，为他们设计适合的互动游戏和艺术活动。我还运用服装设计技能，为孩子们制作了舒适易穿的特殊服装。",
+                charityText2: "这个经历让我深刻理解了同理心的重要性，也激发了我将技术与人文关怀结合的愿望。",
+                vexProject: "VEX机器人比赛全国二等奖",
+                vexProjectDate: "2023年",
+                vexProjectText1: "作为团队队长和机械设计负责人，我带领团队设计并制造了一台高效的VEX竞赛机器人。我负责机械结构设计和团队协调，运用物理知识和工程思维解决了多个技术难题。",
+                vexProjectText2: "在全国总决赛中，我们的机器人以稳定的性能和创新的设计赢得了评委的高度评价，最终获得全国二等奖。这次经历极大地提升了我的问题解决能力和团队领导力。",
+                weatherTitle: "雨后微风是我的灵感源泉",
+                weatherText1: "我不太喜欢过于晴朗的天气，反而钟爱雨后的清新时刻。当微风拂过湿润的空气，带着泥土和青草的芬芳，我的思维会变得特别活跃。这种天气里，我常常带着笔记本到公园，在微风中思考数学问题，构思新的服装设计，或者只是静静地听Founk音乐。",
+                weatherText2: "对我来说，雨后刮风的天气代表着新的开始和无限可能。",
+                footer1: "一个在理性与创意之间寻找平衡的17岁探索者",
+                footer2: "数学与物理给我理解世界的工具 · 服装设计表达我的艺术视角 · 雨后微风带来无限灵感",
+                footer3: "期待在未来的学术旅程中创造更多价值！"
+            },
+            en: {
+                location: "Chengdu, China",
+                name: "MJ Xiong (Carol)",
+                subtitle: "Explorer · Creator · Dreamer",
+                tagline: "A math and physics enthusiast with a passion for fashion design, finding inspiration in the breezy moments after rain",
+                basicInfo: "Basic Information",
+                age: "Age & Birthday",
+                ageText: "17 years old · May 20, 2008 (Taurus)",
+                locationTitle: "Location",
+                locationText: "Chengdu, Sichuan · China",
+                traits: "Personality",
+                traitsText: "Adorable introvert · Enjoys quiet contemplation · Finds inspiration in post-rain breezes",
+                interests: "Passions",
+                math: "Mathematics",
+                mathText: "Exploring the beauty of numbers and logic",
+                physics: "Physics",
+                physicsText: "Understanding the laws of the universe",
+                fashion: "Fashion Design",
+                fashionText: "Creating harmony of aesthetics and function",
+                music: "Founk Music",
+                musicText: "English music that sparks creativity",
+                achievements: "Academic Achievements",
+                ukmt: "UKMT Global Bronze",
+                ukmtText: "UK Mathematics Trust Global Bronze Medalist, qualified for BMO",
+                amc10: "AMC10 Asia Silver",
+                amc10Text: "Silver Medalist in Asian Division of AMC10",
+                amc12: "AMC12 Global Bronze",
+                amc12Text: "Global Bronze Medalist in AMC12",
+                vex: "VEX Robotics National 2nd Place",
+                vexText: "National 2nd Place as team captain",
+                cats: "My Feline Companions",
+                catsTitle: "My Cow Cat and Her Family",
+                catsText1: "I have an adorable cow-patterned cat who recently became a proud mother! Our home is now filled with playful kittens whose antics bring endless joy. Caring for them has taught me responsibility and patience.",
+                catsText2: "When I'm stuck on challenging math or physics problems, watching these little ones play freely helps clear my mind and often leads to new insights.",
+                projects: "Projects & Achievements",
+                charity: "Bringing Warmth to Children with Cerebral Palsy",
+                charityDate: "2022 - 2023",
+                charityText1: "As a core member of a volunteer team, I participated in a year-long project supporting children with cerebral palsy. We visited rehabilitation centers weekly, designing interactive games and art activities. I applied my fashion design skills to create comfortable, adaptive clothing for the children.",
+                charityText2: "This experience deepened my understanding of empathy and inspired me to integrate technology with human-centered care.",
+                vexProject: "VEX Robotics National 2nd Place",
+                vexProjectDate: "2023",
+                vexProjectText1: "As team captain and mechanical design lead, I guided our team in creating a high-performance VEX competition robot. I coordinated the team and solved complex engineering challenges using physics principles.",
+                vexProjectText2: "At the national finals, our robot's stability and innovative design earned high praise from judges, securing 2nd place nationally. This experience significantly enhanced my problem-solving and leadership abilities.",
+                weatherTitle: "Post-Rain Breezes: My Creative Catalyst",
+                weatherText1: "I prefer the freshness after rainfall to bright sunny days. When gentle winds carry the scent of damp earth and grass, my mind becomes exceptionally clear. I often take my notebook to the park during such weather to ponder math problems, sketch fashion designs, or simply enjoy Founk music.",
+                weatherText2: "For me, breezy post-rain weather symbolizes new beginnings and infinite possibilities.",
+                footer1: "A 17-year-old explorer balancing rationality with creativity",
+                footer2: "Mathematics and physics provide tools to understand the world · Fashion design expresses my artistic vision · Post-rain breezes bring boundless inspiration",
+                footer3: "Looking forward to creating more value in my future academic journey!"
+            }
+        };
+        
+        // 根据浏览器语言自动设置
+        function detectLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            return browserLang.startsWith('zh') ? 'cn' : 'en';
+        }
+        
+        // 设置页面语言
+        function setLanguage(lang) {
+            const t = translations[lang];
+            
+            // 更新位置显示
+            document.getElementById('location').textContent = t.location;
+            
+            // 更新头部内容
+            document.querySelector('h1').textContent = t.name;
+            document.querySelector('.subtitle').textContent = t.subtitle;
+            document.querySelector('.tagline').textContent = t.tagline;
+            
+            // 更新基本信息卡片
+            document.querySelector('.card-header h2').textContent = t.basicInfo;
+            document.querySelectorAll('.info-content h3')[0].textContent = t.age;
+            document.querySelectorAll('.info-content p')[0].textContent = t.ageText;
+            document.querySelectorAll('.info-content h3')[1].textContent = t.locationTitle;
+            document.querySelectorAll('.info-content p')[1].textContent = t.locationText;
+            document.querySelectorAll('.info-content h3')[2].textContent = t.traits;
+            document.querySelectorAll('.info-content p')[2].textContent = t.traitsText;
+            
+            // 更新兴趣爱好卡片
+            document.querySelectorAll('.card-header h2')[1].textContent = t.interests;
+            document.querySelectorAll('.interest h3')[0].textContent = t.math;
+            document.querySelectorAll('.interest p')[0].textContent = t.mathText;
+            document.querySelectorAll('.interest h3')[1].textContent = t.physics;
+            document.querySelectorAll('.interest p')[1].textContent = t.physicsText;
+            document.querySelectorAll('.interest h3')[2].textContent = t.fashion;
+            document.querySelectorAll('.interest p')[2].textContent = t.fashionText;
+            document.querySelectorAll('.interest h3')[3].textContent = t.music;
+            document.querySelectorAll('.interest p')[3].textContent = t.musicText;
+            
+            // 更新学术成就
+            document.querySelector('.section-title').textContent = t.achievements;
+            document.querySelectorAll('.achievement-info h4')[0].textContent = t.ukmt;
+            document.querySelectorAll('.achievement-info p')[0].textContent = t.ukmtText;
+            document.querySelectorAll('.achievement-info h4')[1].textContent = t.amc10;
+            document.querySelectorAll('.achievement-info p')[1].textContent = t.amc10Text;
+            document.querySelectorAll('.achievement-info h4')[2].textContent = t.amc12;
+            document.querySelectorAll('.achievement-info p')[2].textContent = t.amc12Text;
+            document.querySelectorAll('.achievement-info h4')[3].textContent = t.vex;
+            document.querySelectorAll('.achievement-info p')[3].textContent = t.vexText;
+            
+            // 更新猫咪部分
+            document.querySelectorAll('.section-title')[1].textContent = t.cats;
+            document.querySelector('.cat-info h3').textContent = t.catsTitle;
+            document.querySelectorAll('.cat-info p')[0].textContent = t.catsText1;
+            document.querySelectorAll('.cat-info p')[1].textContent = t.catsText2;
+            
+            // 更新项目部分
+            document.querySelectorAll('.section-title')[2].textContent = t.projects;
+            document.querySelectorAll('.project-card h3')[0].innerHTML = `<i class="fas fa-hands-helping"></i> ${t.charity}`;
+            document.querySelectorAll('.project-card .date')[0].textContent = t.charityDate;
+            document.querySelectorAll('.project-card p')[0].textContent = t.charityText1;
+            document.querySelectorAll('.project-card p')[1].textContent = t.charityText2;
+            document.querySelectorAll('.project-card h3')[1].innerHTML = `<i class="fas fa-robot"></i> ${t.vexProject}`;
+            document.querySelectorAll('.project-card .date')[1].textContent = t.vexProjectDate;
+            document.querySelectorAll('.project-card p')[2].textContent = t.vexProjectText1;
+            document.querySelectorAll('.project-card p')[3].textContent = t.vexProjectText2;
+            
+            // 更新天气部分
+            document.querySelector('.weather-section h2').textContent = t.weatherTitle;
+            document.querySelectorAll('.weather-section p')[0].textContent = t.weatherText1;
+            document.querySelectorAll('.weather-section p')[1].textContent = t.weatherText2;
+            
+            // 更新页脚
+            document.querySelectorAll('.footer-content h3')[0].textContent = t.name;
+            document.querySelectorAll('.footer-content p')[0].textContent = t.footer1;
+            document.querySelectorAll('.footer-content p')[1].textContent = t.footer2;
+            document.querySelectorAll('.footer-content p')[2].textContent = t.footer3;
+            
+            // 更新页面语言属性
+            document.documentElement.lang = lang === 'cn' ? 'zh-CN' : 'en';
+        }
+        
+        // 初始加载时设置语言
+        document.addEventListener('DOMContentLoaded', function() {
+            const initialLang = detectLanguage();
+            setLanguage(initialLang);
+            
+            // 添加语言切换事件
+            document.getElementById('lang-cn').addEventListener('click', function() {
+                setLanguage('cn');
+            });
+            
+            document.getElementById('lang-en').addEventListener('click', function() {
+                setLanguage('en');
+            });
+            
+            // 添加滚动动画
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            document.querySelectorAll('.card, .project-card, .cat-section, .weather-section, .achievement-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
