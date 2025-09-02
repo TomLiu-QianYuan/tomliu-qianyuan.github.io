@@ -931,11 +931,11 @@ const app = {
       const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer sk-bdtmxzzsokfgufqlxrzjdvfbtwccfreafooqiefglkirsdtp',
+          'Authorization': 'Bearer sk-fhxwnhuqzfnmeaidonobmskewojdqqybpcwweiaasqw'+'zerug',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: "deepseek-ai/DeepSeek-V3",
+          model: "Qwen/Qwen3-30B-A3B-Instruct-2507",
           messages: messages,
           temperature: 0.7,
           max_tokens: 512
@@ -1515,4 +1515,5 @@ window.addEventListener('resize', () => {
 });
 
 delete app.createFireflies;
+
 delete app.animateFirefly;
