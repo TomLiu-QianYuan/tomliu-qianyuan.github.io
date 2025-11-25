@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA | SUN TZU WAR ROOM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;400;700;800&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#030303',
+                        panel: '#0a0a0a',
+                        border: '#1f1f1f',
+                        gold: '#fbbf24',
+                        neon: '#22c55e',
+                        danger: '#ef4444',
+                        dim: '#52525b'
+                    },
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scan': 'scan 4s linear infinite',
+                        'flash': 'flash 0.2s ease-out',
+                    },
+                    keyframes: {
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100vh)' }
+                        },
+                        flash: {
+                            '0%': { opacity: '1' },
+                            '100%': { opacity: '0' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #030303; color: #e4e4e7; overflow: hidden; }
+        
+        /* CRT Scanline Effect */
+        .scanline {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none; z-index: 50; opacity: 0.3;
+        }
+        .scanner-bar {
+            position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+            background: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+            animation: scan 3s linear infinite; pointer-events: none; z-index: 40; opacity: 0.1;
+        }
+
+        /* SVG Animations */
+        .path-draw {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 2s ease-out forwards;
+        }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+        
+        /* Glitch Text Effect Class */
+        .glitch-text span { display: inline-block; transition: all 0.1s; }
+
+        /* Reveal Panel Transition */
+        .reveal-box {
+            max-height: 0; opacity: 0; overflow: hidden;
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            border-left: 2px solid #333;
+        }
+        .reveal-box.active {
+            max-height: 800px; opacity: 1;
+            border-left: 2px solid #fbbf24;
+            padding-left: 1.5rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #030303; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+    </style>
+</head>
+<body class="selection:bg-neon selection:text-black">
+
+    <div class="scanline"></div>
+    <div class="scanner-bar"></div>
+
+    <div id="boot-screen" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center font-mono text-xs md:text-sm text-neon p-8">
+        <div class="w-full max-w-md space-y-2">
+            <div id="boot-log" class="space-y-1"></div>
+            <div class="h-1 w-full bg-gray-900 mt-4 overflow-hidden">
+                <div id="boot-progress" class="h-full bg-neon w-0 transition-all duration-1000 ease-out"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-interface" class="h-screen flex flex-col opacity-0 transition-opacity duration-1000">
+        
+        <header class="h-16 border-b border-border bg-black/80 backdrop-blur-md flex items-center justify-between px-6 shrink-0 relative z-30">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-3 h-3 bg-neon rounded-full animate-pulse-fast"></div>
+                    <div class="absolute inset-0 bg-neon rounded-full animate-ping opacity-20"></div>
+                </div>
+                <h1 class="font-mono font-bold tracking-[0.2em] text-sm text-white">
+                    SUN TZU <span class="text-dim">///</span> PROTOCOL
+                </h1>
+            </div>
+            <div class="flex items-center gap-6 font-mono text-xs">
+                <div class="text-dim">SYS: <span class="text-neon">ONLINE</span></div>
+                <div class="text-dim">DATA: <span class="text-white" id="chapter-counter">01 / 13</span></div>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col md:flex-row h-full overflow-hidden relative">
+            
+            <div class="flex-1 relative bg-[#050505] flex flex-col border-r border-border">
+                <div class="absolute inset-0" style="background-image: radial-gradient(#1a1a1a 1px, transparent 1px); background-size: 30px 30px; opacity: 0.5;"></div>
+                
+                <div class="flex-1 flex items-center justify-center relative p-8">
+                    <div class="w-full max-w-3xl relative z-10">
+                        <div class="flex justify-between items-end mb-6 border-b border-border pb-4">
+                            <div>
+                                <span id="chapter-tag" class="text-[10px] font-mono text-gold border border-gold/20 px-2 py-1 bg-gold/5 uppercase tracking-widest">Initialization</span>
+                                <h2 id="scenario-title" class="text-3xl md:text-5xl font-black text-white mt-2 leading-tight uppercase glitch-target">LOADING...</h2>
+                            </div>
+                            <i data-lucide="activity" class="text-dim w-6 h-6"></i>
+                        </div>
+                        
+                        <div id="chart-container" class="h-[350px] w-full border border-border bg-black/40 backdrop-blur relative shadow-2xl overflow-hidden group">
+                            <div class="absolute inset-0 bg-neon/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                        </div>
+
+                        <p id="scenario-desc" class="mt-6 text-gray-400 font-mono text-sm md:text-base leading-relaxed border-l-2 border-dim pl-4"></p>
+                    </div>
+                </div>
+
+                <div class="h-16 border-t border-border flex items-center justify-between px-8 bg-black z-20">
+                    <button onclick="nav(-1)" class="group flex items-center gap-2 text-dim hover:text-white transition-colors font-mono text-xs uppercase tracking-widest">
+                        <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i> PREV INTEL
+                    </button>
+                    <div class="flex gap-1" id="pagination-dots"></div>
+                    <button onclick="nav(1)" class="group flex items-center gap-2 text-dim hover:text-white transition-colors font-mono text-xs uppercase tracking-widest">
+                        NEXT INTEL <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full md:w-[450px] bg-black flex flex-col shrink-0 border-l border-border relative z-40 shadow-[-20px_0_50px_rgba(0,0,0,0.5)]">
+                
+                <div class="p-8 flex-1 overflow-y-auto">
+                    <div class="mb-10">
+                        <h3 class="text-[10px] font-mono text-dim uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-3 h-3"></i> Strategic Core
+                        </h3>
+                        <p class="text-sm text-white font-light">
+                            局势已定。等待指挥官指令。<br>
+                            <span class="text-dim">Analyzing Price Action structure...</span>
+                        </p>
+                    </div>
+
+                    <button id="reveal-btn" onclick="reveal()" class="w-full py-6 border border-white/20 bg-white/5 hover:bg-white hover:text-black hover:border-white transition-all duration-300 group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                        <span class="relative font-bold font-mono tracking-widest flex items-center justify-center gap-3">
+                            [ DECRYPT STRATEGY ] <i data-lucide="unlock" class="w-4 h-4"></i>
+                        </span>
+                    </button>
+
+                    <div id="reveal-content" class="reveal-box mt-8">
+                        <div class="space-y-8">
+                            
+                            <div>
+                                <h4 class="text-[10px] text-gold uppercase tracking-widest mb-2 font-mono">Sun Tzu Doctrine</h4>
+                                <p id="quote-text" class="text-xl md:text-2xl font-serif italic text-white leading-relaxed"></p>
+                            </div>
+
+                            <div>
+                                <h4 class="text-[10px] text-dim uppercase tracking-widest mb-2 font-mono">Alpha Logic (PA)</h4>
+                                <p id="logic-text" class="text-sm text-gray-400 leading-7 font-mono"></p>
+                            </div>
+
+                            <div class="bg-white/5 border border-white/10 p-5 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 p-2 opacity-20">
+                                    <i data-lucide="crosshair" class="w-12 h-12 text-white"></i>
+                                </div>
+                                <h4 class="text-[10px] text-neon uppercase tracking-widest mb-1 font-mono">Final Order</h4>
+                                <p id="action-text" class="text-lg font-bold text-white tracking-wide"></p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // --- DATA MATRIX ---
+        const intel = [
+            {
+                tag: "I. Laying Plans",
+                title: "庙算 · 盈亏比",
+                desc: "战场扫描：做多形态确认。阻力位距离极近（Upside Limited），下方支撑位遥远（Downside Huge）。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <line x1="0" y1="50" x2="400" y2="50" stroke="#ef4444" stroke-dasharray="4"/>
+                    <text x="10" y="40" fill="#ef4444" stroke="none" font-size="10" font-family="monospace">MAJOR RESISTANCE</text>
+                    <path class="path-draw" d="M0,150 L100,120 L150,130 L200,60" />
+                    <circle cx="200" cy="60" r="4" fill="#fff" stroke="none" class="animate-pulse"/>
+                    <path d="M200,60 L200,50" stroke="#22c55e" stroke-width="1"/>
+                    <path d="M200,60 L200,140" stroke="#ef4444" stroke-width="1"/>
+                </svg>`,
+                quote: "多算胜，少算不胜。",
+                logic: "未战而庙算。R:R (Risk/Reward) 是交易的生命线。此局风险90，利润10。这是一场注定失败的战争。",
+                action: "WAIT // 按兵不动"
+            },
+            {
+                tag: "II. Waging War",
+                title: "兵贵胜 · 拒磨损",
+                desc: "战场扫描：市场处于极窄幅震荡（Choppy）。你已连续开火（交易）5次，弹药（本金）损耗严重。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <rect x="50" y="80" width="300" height="40" fill="#fff" fill-opacity="0.05" stroke="none"/>
+                    <text x="200" y="105" fill="#555" stroke="none" font-size="10" font-family="monospace" text-anchor="middle">KILL ZONE (CHOP)</text>
+                    <path class="path-draw" d="M50,90 L80,110 L110,85 L140,115 L170,90 L200,100" />
+                </svg>`,
+                quote: "兵贵胜，不贵久。",
+                logic: "久暴师则国用不足。频繁交易是新手的坟墓。在垃圾时间里消耗精力，是兵家大忌。",
+                action: "STOP // 强制停火"
+            },
+            {
+                tag: "III. Strategy",
+                title: "全胜 · 顺大势",
+                desc: "战场扫描：大级别趋势向上。当前出现小级别顶背离。诱惑你做空。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <path class="path-draw" d="M0,160 L100,140 L200,80 L300,30" stroke="#22c55e" />
+                    <text x="310" y="30" fill="#22c55e" stroke="none" font-size="10" font-family="monospace">UP TREND</text>
+                </svg>`,
+                quote: "不战而屈人之兵，善之善者也。",
+                logic: "逆势做空是攻坚战，下策。顺势而为是全胜。不要试图阻挡行进中的列车。",
+                action: "FOLLOW // 顺势做多"
+            },
+            {
+                tag: "IV. Dispositions",
+                title: "不可胜 · 守",
+                desc: "战场扫描：K线杂乱，无结构，无方向。多空胶着。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <path class="path-draw" d="M50,100 L100,80 L150,120 L200,90 L250,110" stroke="#71717a"/>
+                </svg>`,
+                quote: "不可胜在己，可胜在敌。",
+                logic: "先为不可胜。在看不清局势时，防守是唯一策略。不亏钱就是赢。",
+                action: "DEFEND // 观望"
+            },
+            {
+                tag: "V. Energy",
+                title: "势 · 动能",
+                desc: "战场扫描：长期盘整后，巨量长阳突破。动能爆发。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <rect x="50" y="100" width="150" height="30" fill="#222" stroke="none"/>
+                    <path class="path-draw" d="M200,115 L230,115 L260,40" stroke="#22c55e" />
+                </svg>`,
+                quote: "如转圆石于千仞之山者，势也。",
+                logic: "势如破竹。圆石滚落，不可阻挡。此时做空是螳臂当车。",
+                action: "LONG // 追击"
+            },
+            {
+                tag: "VI. Weak Points",
+                title: "虚实 · 陷阱",
+                desc: "战场扫描：多头冲击阻力失败，留长上影线（Shooting Star）。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <line x1="0" y1="60" x2="400" y2="60" stroke="#fff"/>
+                    <path class="path-draw" d="M150,100 L200,80 L250,60 L270,65" />
+                    <line x1="300" y1="20" x2="300" y2="65" stroke="white"/>
+                    <rect x="295" y="60" width="10" height="10" fill="#ef4444" stroke="none"/>
+                    <text x="320" y="40" fill="#ef4444" stroke="none" font-size="10" font-family="monospace">TRAP</text>
+                </svg>`,
+                quote: "攻其所不守也。",
+                logic: "击其虚。假突破暴露了多头的虚弱。此时反向猎杀，利用对手的止损盘。",
+                action: "SHORT // 反向做空"
+            },
+            {
+                tag: "VII. Maneuvering",
+                title: "军争 · 迂直",
+                desc: "战场扫描：价格直线上涨，远离价值区（均线）。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <path d="M0,180 Q200,160 400,130" stroke="#22c55e" stroke-opacity="0.3"/>
+                    <path class="path-draw" d="M0,160 L100,140 L200,80 L300,20" />
+                </svg>`,
+                quote: "以迂为直，以患为利。",
+                logic: "直路（追高）即险路。迂路（等待回调）才是捷径。把踏空的焦虑转化为等待的耐心。",
+                action: "WAIT // 等待回调"
+            },
+            {
+                tag: "VIII. Variation",
+                title: "九变 · 避险",
+                desc: "战场扫描：形态完美，但5分钟后有重大数据发布。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <path class="path-draw" d="M100,150 L150,130 L200,140" stroke="#22c55e"/>
+                    <text x="250" y="100" fill="#eab308" stroke="none" font-size="14" font-family="monospace" text-anchor="middle">⚠️ NEWS ⚠️</text>
+                </svg>`,
+                quote: "途有所不由，军有所不击。",
+                logic: "通权达变。不可控的宏观风险面前，技术形态失效。不立危墙之下。",
+                action: "AVOID // 规避"
+            },
+            {
+                tag: "IX. Marching",
+                title: "行军 · 信号",
+                desc: "战场扫描：回踩支撑，收出长下影线Pinbar。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <line x1="0" y1="150" x2="400" y2="150" stroke="#fff" stroke-dasharray="2"/>
+                    <line x1="200" y1="150" x2="200" y2="180" stroke="white"/>
+                    <rect x="195" y="140" width="10" height="10" fill="#22c55e" stroke="none"/>
+                </svg>`,
+                quote: "辞低而备者，进也。",
+                logic: "相敌。下影线是多头集结的信号，空头力竭。",
+                action: "ENTRY // 进场"
+            },
+            {
+                tag: "X. Terrain",
+                title: "地形 · 隘形",
+                desc: "战场扫描：三角形收敛末端，波动率压缩。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <path d="M50,150 L300,100 L50,50" fill="none" stroke="#fff"/>
+                    <path class="path-draw" d="M100,100 L150,80 L200,100 L250,90" stroke="#777"/>
+                </svg>`,
+                quote: "隘形者，我先居之。",
+                logic: "抢占隘口。在爆发前埋伏，占据有利地形。",
+                action: "POSITION // 埋伏"
+            },
+            {
+                tag: "XI. Nine Situations",
+                title: "九地 · 死地",
+                desc: "战场扫描：做多被套，跌破关键支撑。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <line x1="0" y1="100" x2="400" y2="100" stroke="#fff"/>
+                    <path class="path-draw" d="M0,80 L200,90 L250,110 L300,140" stroke="#ef4444"/>
+                </svg>`,
+                quote: "陷之死地然后生。",
+                logic: "置之死地，唯有斩断亏损才能后生。死扛必死。",
+                action: "CUT LOSS // 斩仓"
+            },
+            {
+                tag: "XII. Fire Attack",
+                title: "火攻 · 爆发",
+                desc: "战场扫描：平静市场突然爆出大阳线。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <rect x="0" y="150" width="200" height="10" fill="#333" stroke="none"/>
+                    <rect x="220" y="50" width="30" height="110" fill="#22c55e" stroke="none"/>
+                </svg>`,
+                quote: "火发而兵静者，待而勿攻。",
+                logic: "火已烧起，乘风助火。利用波动率爆发获利。",
+                action: "MOMENTUM // 顺势"
+            },
+            {
+                tag: "XIII. Spies",
+                title: "用间 · 情报",
+                desc: "战场扫描：小周期看涨，大周期强阻力。",
+                chart: `<svg viewBox="0 0 400 200" class="w-full h-full stroke-white fill-none stroke-2">
+                    <text x="200" y="40" fill="#ef4444" stroke="none" font-size="12" font-family="monospace" text-anchor="middle">HTF RESISTANCE</text>
+                    <path class="path-draw" d="M150,150 L200,140" stroke="#22c55e"/>
+                    <text x="180" y="160" fill="#22c55e" stroke="none" font-size="10" font-family="monospace">LTF Buy</text>
+                </svg>`,
+                quote: "三军之所动，莫亲于间。",
+                logic: "相信高级情报（大周期）。不要中计。",
+                action: "HTF BIAS // 信大周期"
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // --- BOOT SEQUENCE ---
+        async function boot() {
+            const log = document.getElementById('boot-log');
+            const progress = document.getElementById('boot-progress');
+            const msgs = [
+                "INITIALIZING ALPHA KERNEL...",
+                "LOADING SUN TZU STRATEGY MODULES...",
+                "CONNECTING TO MARKET DATA FEED...",
+                "CALIBRATING PA ALGORITHMS...",
+                "SYSTEM READY."
+            ];
+
+            progress.style.width = "100%";
+
+            for (const msg of msgs) {
+                log.innerHTML += `<div>> ${msg}</div>`;
+                await new Promise(r => setTimeout(r, 400));
+            }
+
+            await new Promise(r => setTimeout(r, 500));
+            document.getElementById('boot-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('boot-screen').style.display = 'none';
+                document.getElementById('main-interface').style.opacity = '1';
+                loadScenario(0);
+            }, 500);
+        }
+
+        // --- TYPEWRITER EFFECT ---
+        async function typeText(elementId, text, speed = 10) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = '';
+            for (let i = 0; i < text.length; i++) {
+                el.innerHTML += text.charAt(i);
+                await new Promise(r => setTimeout(r, speed));
+            }
+        }
+
+        // --- DECRYPTION EFFECT ---
+        function decryptText(elementId, finalText) {
+            const el = document.getElementById(elementId);
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+            let iterations = 0;
+            const maxIterations = 20;
+
+            const interval = setInterval(() => {
+                el.innerText = finalText.split("").map((letter, index) => {
+                    if (index < iterations) return finalText[index];
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join("");
+
+                if (iterations >= finalText.length) clearInterval(interval);
+                iterations += 1/2; // speed
+            }, 30);
+        }
+
+        // --- MAIN LOGIC ---
+        function loadScenario(idx) {
+            if (idx >= intel.length) idx = 0;
+            if (idx < 0) idx = intel.length - 1;
+            currentIndex = idx;
+            const data = intel[currentIndex];
+
+            // Reset Right Panel
+            document.getElementById('reveal-content').classList.remove('active');
+            document.getElementById('reveal-btn').style.display = 'flex';
+            document.getElementById('reveal-btn').style.opacity = '1';
+
+            // Visual Updates
+            document.getElementById('chapter-counter').innerText = `${(currentIndex + 1).toString().padStart(2, '0')} / 13`;
+            document.getElementById('chapter-tag').innerText = data.tag;
+            
+            // Animate Title
+            const titleEl = document.getElementById('scenario-title');
+            titleEl.innerText = data.title;
+            titleEl.classList.remove('glitch-target');
+            void titleEl.offsetWidth; // trigger reflow
+            titleEl.classList.add('glitch-target');
+
+            document.getElementById('scenario-desc').innerText = data.desc;
+            document.getElementById('chart-container').innerHTML = data.chart;
+            
+            // Pagination dots
+            const dots = document.getElementById('pagination-dots');
+            dots.innerHTML = '';
+            intel.forEach((_, i) => {
+                dots.innerHTML += `<div class="w-1 h-1 rounded-full ${i === currentIndex ? 'bg-neon' : 'bg-dim'}"></div>`;
+            });
+
+            // Re-trigger SVG animation
+            const path = document.querySelector('.path-draw');
+            if(path) {
+                path.style.animation = 'none';
+                path.offsetHeight; /* trigger reflow */
+                path.style.animation = 'draw 2s ease-out forwards';
+            }
+
+            lucide.createIcons();
+        }
+
+        function reveal() {
+            const data = intel[currentIndex];
+            const btn = document.getElementById('reveal-btn');
+            const content = document.getElementById('reveal-content');
+
+            // Fade out button
+            btn.style.opacity = '0';
+            setTimeout(() => btn.style.display = 'none', 300);
+
+            // Open panel
+            content.classList.add('active');
+
+            // Decrypt Texts
+            setTimeout(() => {
+                typeText('quote-text', `"${data.quote}"`, 20);
+                setTimeout(() => {
+                    typeText('logic-text', data.logic, 10);
+                    setTimeout(() => {
+                        decryptText('action-text', data.action);
+                    }, 500);
+                }, 800);
+            }, 300);
+        }
+
+        function nav(dir) {
+            loadScenario(currentIndex + dir);
+        }
+
+        // Start
+        window.onload = boot;
+        lucide.createIcons();
+    </script>
+</body>
+</html>
