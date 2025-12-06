@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025结构竞赛 - 旗舰工程视图</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --panel-bg: rgba(30, 30, 30, 0.85);
+            --text-main: #e0e0e0;
+            --text-dim: #a0a0a0;
+            --accent: #00f3ff; /* 赛博蓝 */
+            --danger: #ff0055;
+            --border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Roboto Mono', monospace; /* 工程字体 */
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+        }
+
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1e1e1e 0%, #000000 100%);
+        }
+
+        /* 左侧：模型选择栏 */
+        #sidebar-left {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .model-btn {
+            background: var(--panel-bg);
+            border: var(--border);
+            color: var(--text-dim);
+            padding: 12px 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .model-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        
+        .model-btn.active {
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        /* 右侧：控制面板 */
+        #sidebar-right {
+            width: 320px;
+            background: var(--panel-bg);
+            border-left: 1px solid #333;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            z-index: 20;
+        }
+
+        h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
+        /* 统计数据 */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .stat-box {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .stat-val { font-size: 18px; font-weight: bold; color: #fff; display: block; }
+        .stat-label { font-size: 12px; color: var(--text-dim); }
+
+        /* 图层开关 */
+        .control-group { margin-bottom: 25px; }
+        .layer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #333;
+        }
+        .layer-label { display: flex; align-items: center; font-size: 14px; }
+        .dot { width: 10px; height: 10px; border-radius: 2px; margin-right: 10px; box-shadow: 0 0 5px currentColor; }
+
+        /* 自定义 Checkbox */
+        input[type="checkbox"] {
+            accent-color: var(--accent);
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        /* 爆炸视图滑块 */
+        .slider-container { margin-top: 10px; }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: #444;
+            outline: none;
+            appearance: none;
+            border-radius: 2px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* 底部操作提示 */
+        #tips-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-dim);
+            font-size: 12px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 20px;
+            border-radius: 20px;
+            pointer-events: none;
+        }
+        kbd {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #fff;
+            font-family: monospace;
+            border-bottom: 2px solid #111;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="sidebar-left">
+        <div class="model-btn active" onclick="switchModel('triangle')">A. 标准三棱柱 <br><span style="font-size:10px; opacity:0.6">推荐方案</span></div>
+        <div class="model-btn" onclick="switchModel('pyramid')">B. 锥形塔 <br><span style="font-size:10px; opacity:0.6">高稳定性</span></div>
+        <div class="model-btn" onclick="switchModel('hyper')">C. 双曲面塔 <br><span style="font-size:10px; opacity:0.6">抗扭最强</span></div>
+        <div class="model-btn" onclick="switchModel('xframe')">D. 密网X型 <br><span style="font-size:10px; opacity:0.6">极高承重/超重风险</span></div>
+        <div class="model-btn" onclick="switchModel('square')">E. 正四棱柱 <br><span style="font-size:10px; opacity:0.6">容易制作/耗材大</span></div>
+    </div>
+
+    <div id="canvas-container">
+        <div id="tips-bar">
+            左键：旋转  |  <kbd>Ctrl</kbd> + 左键：平移  |  滚轮：缩放
+        </div>
+    </div>
+
+    <div id="sidebar-right">
+        <h2>工程数据 (Data)</h2>
+        <div class="stat-grid">
+            <div class="stat-box">
+                <span class="stat-val" id="weight-display">0g</span>
+                <span class="stat-label">预估自重</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-val" id="count-display">0</span>
+                <span class="stat-label">筷子段数</span>
+            </div>
+        </div>
+
+        <h2>图层可见性 (Layers)</h2>
+        <div class="control-group">
+            <div class="layer-row">
+                <div class="layer-label" style="color:#ff4757">
+                    <div class="dot" style="background:#ff4757"></div>主立柱 (Red)
+                </div>
+                <input type="checkbox" checked onchange="toggleLayer('red', this.checked)">
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#2ed573">
+                    <div class="dot" style="background:#2ed573"></div>水平梁 (Green)
+                </div>
+                <input type="checkbox" checked onchange="toggleLayer('blue', this.checked)">
+            </div>
+            <div class="layer-row">
+                <div class="layer-label" style="color:#ffa502">
+                    <div class="dot" style="background:#ffa502"></div>斜支撑 (Orange)
+                </div>
+                <input type="checkbox" checked onchange="toggleLayer('yellow', this.checked)">
+            </div>
+        </div>
+
+        <h2>结构透视 (Analysis)</h2>
+        <div class="control-group">
+            <label style="font-size:12px; color:#aaa; display:block; margin-bottom:5px;">爆炸视图 (Exploded View)</label>
+            <div class="slider-container">
+                <input type="range" min="0" max="1" step="0.01" value="0" oninput="explodeModel(this.value)">
+            </div>
+        </div>
+        
+        <div style="margin-top:auto; font-size:12px; color:#666; border-top:1px solid #333; padding-top:15px;">
+            Designed for 2025 Structural Challenge
+        </div>
+    </div>
+
+    <script>
+        // ====================================================================
+        // 1. 初始化引擎
+        // ====================================================================
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        // 增加一点赛博朋克风格的雾
+        scene.fog = new THREE.FogExp2(0x050505, 0.003);
+
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(60, 45, 60);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 柔和阴影
+        container.appendChild(renderer.domElement);
+
+        // ====================================================================
+        // 2. 灯光系统 (工程高亮)
+        // ====================================================================
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        // 主光
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1);
+        mainLight.position.set(50, 80, 50);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
+        scene.add(mainLight);
+
+        // 蓝色轮廓光 (增加科技感)
+        const rimLight = new THREE.DirectionalLight(0x00f3ff, 0.6);
+        rimLight.position.set(-50, 20, -50);
+        scene.add(rimLight);
+
+        // 红色底部光 (增加立体感)
+        const bottomLight = new THREE.PointLight(0xff0055, 0.3);
+        bottomLight.position.set(0, -20, 0);
+        scene.add(bottomLight);
+
+        // 地面网格
+        const gridHelper = new THREE.GridHelper(200, 40, 0x333333, 0x111111);
+        scene.add(gridHelper);
+
+        // ====================================================================
+        // 3. 交互控制器 (防止误触配置)
+        // ====================================================================
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        
+        // *** 核心修改：禁用右键，改为Shift+左键平移 ***
+        controls.mouseButtons = {
+            LEFT: THREE.MOUSE.ROTATE,
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: null // 禁用右键
+        }
+        // 设置 Shift + 左键为平移
+        controls.keys = {
+            LEFT: 'ArrowLeft',
+            UP: 'ArrowUp',
+            RIGHT: 'ArrowRight',
+            BOTTOM: 'ArrowDown'
+        }
+        // 允许按住键盘按键配合鼠标操作
+        controls.listenToKeyEvents(window);
+
+        // 为了实现 Shift+Drag Pan，ThreeJS OrbitControls 默认支持按住Shift
+        // 或者我们可以手动重映射，但通常 OrbitControls 默认 Shift+Left 就是 Pan 或者 Right 是 Pan
+        // 为了强制 Shift+Left = Pan，我们需要覆盖：
+        // 实际上 Threejs OrbitControls 默认右键是 Pan。
+        // 我们通过将 RIGHT 设为 null 禁用了右键。
+        // 想让 Left + Shift 变成 Pan，需要一点小技巧，或者告诉用户 "按住Shift" (部分版本支持)
+        // 修正：最稳妥的方式是把 PAN 映射给 LEFT，但是加上按键检测。
+        // 但简单点，我们可以在 window 上监听 keydown。
+        
+        window.addEventListener('keydown', (e) => {
+            if(e.shiftKey) {
+                controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
+        });
+
+        controls.target.set(0, 25, 0);
+
+        // ====================================================================
+        // 4. 核心构建逻辑
+        // ====================================================================
+        let meshes = { red: [], blue: [], yellow: [] }; // 存储分类网格
+        let allMeshesData = []; // 存储用于爆炸视图的原始位置信息
+
+        // 估算重量参数
+        const DENSITY = 0.35; // g/cm (假设普通竹筷密度)
+
+        function createChopstick(p1, p2, type, radius) {
+            const dist = p1.distanceTo(p2);
+            const center = p2.clone().add(p1).multiplyScalar(0.5);
+            
+            let color;
+            if (type === 'red') color = 0xff4757;       // 主柱
+            else if (type === 'blue') color = 0x2ed573; // 横梁
+            else color = 0xffa502;                      // 斜撑
+
+            // 材质：高光塑料感
+            const geo = new THREE.CylinderGeometry(radius, radius, dist, 12);
+            const mat = new THREE.MeshStandardMaterial({ 
+                color: color, 
+                roughness: 0.3,
+                metalness: 0.1
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+
+            // 旋转
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), new THREE.Vector3().subVectors(p2, p1).normalize());
+            mesh.setRotationFromQuaternion(quaternion);
+            
+            // 位置
+            mesh.position.copy(center);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+
+            // 存入场景
+            scene.add(mesh);
+            meshes[type].push(mesh);
+            
+            // 存入数据用于爆炸视图
+            // 计算从中心轴(0,Y,0)向外的向量
+            const explodeDir = new THREE.Vector3(center.x, 0, center.z).normalize(); 
+            // 如果是在中心轴上（如顶部中心），则向上
+            if (explodeDir.length() < 0.1) explodeDir.set(0, 1, 0);
+
+            allMeshesData.push({
+                mesh: mesh,
+                originalPos: center.clone(),
+                direction: explodeDir,
+                weight: dist * DENSITY
+            });
+        }
+
+        function clearScene() {
+            ['red', 'blue', 'yellow'].forEach(k => {
+                meshes[k].forEach(m => {
+                    scene.remove(m);
+                    m.geometry.dispose();
+                    m.material.dispose();
+                });
+                meshes[k] = [];
+            });
+            allMeshesData = [];
+        }
+
+        const TOWER_H = 55;
+        const BASE_R = 10;
+
+        function buildModel(type) {
+            clearScene();
+
+            let sides = (type === 'square') ? 4 : 3;
+            let levels = 3;
+            let twist = (type === 'hyper') ? Math.PI/2.5 : 0; 
+
+            const vertices = [];
+
+            // 生成节点
+            for (let i = 0; i < levels; i++) {
+                const ratio = i / (levels - 1);
+                const h = ratio * TOWER_H;
+                
+                let r = BASE_R;
+                if (type === 'pyramid') r = BASE_R * (1 - ratio * 0.6);
+                
+                const currentTwist = twist * ratio;
+                const offset = (sides===4) ? Math.PI/4 : Math.PI/2;
+
+                const levelVerts = [];
+                for (let s = 0; s < sides; s++) {
+                    const theta = s * (2*Math.PI/sides) + offset + currentTwist;
+                    levelVerts.push(new THREE.Vector3(r * Math.cos(theta), h, r * Math.sin(theta)));
+                }
+                vertices.push(levelVerts);
+            }
+
+            // A. 主立柱 (Red) - 粗
+            for (let i = 0; i < sides; i++) {
+                for (let j = 0; j < levels - 1; j++) {
+                    createChopstick(vertices[j][i], vertices[j+1][i], 'red', 0.8);
+                }
+            }
+
+            // B. 横梁 (Blue) - 中
+            for (let j = 0; j < levels; j++) {
+                if (type === 'pyramid' && j === levels-1) continue;
+                for (let i = 0; i < sides; i++) {
+                    const next = (i + 1) % sides;
+                    createChopstick(vertices[j][i], vertices[j][next], 'blue', 0.5);
+                }
+            }
+
+            // C. 斜撑 (Yellow) - 细
+            for (let j = 0; j < levels - 1; j++) {
+                for (let i = 0; i < sides; i++) {
+                    const next = (i + 1) % sides;
+                    createChopstick(vertices[j][i], vertices[j+1][next], 'yellow', 0.4);
+                    
+                    if (type === 'xframe' || type === 'square') {
+                        createChopstick(vertices[j][next], vertices[j+1][i], 'yellow', 0.4);
+                    }
+                }
+            }
+
+            // 计算总重
+            calculateTotalWeight();
+            
+            // 重置滑块
+            document.querySelector('input[type="range"]').value = 0;
+            
+            // 恢复图层显示状态
+            restoreLayerState();
+        }
+
+        // ====================================================================
+        // 5. 功能逻辑
+        // ====================================================================
+
+        // 计算重量
+        function calculateTotalWeight() {
+            let totalWeight = 0;
+            let count = 0;
+            allMeshesData.forEach(d => {
+                totalWeight += d.weight;
+                count++;
+            });
+            // 加上胶水估算 (约20%)
+            const glueWeight = totalWeight * 0.2;
+            const finalWeight = totalWeight + glueWeight;
+
+            // 动画数字滚动
+            animateValue("weight-display", 0, finalWeight, 1000, "g");
+            animateValue("count-display", 0, count, 1000, "");
+        }
+
+        function animateValue(id, start, end, duration, suffix) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // 图层控制
+        function toggleLayer(type, isVisible) {
+            // type 映射到 meshes 的 key
+            let key = '';
+            if (type === 'red') key = 'red';
+            else if (type === 'blue') key = 'blue';
+            else if (type === 'yellow') key = 'yellow';
+            
+            if(meshes[key]) {
+                meshes[key].forEach(m => m.visible = isVisible);
+            }
+        }
+
+        function restoreLayerState() {
+            // 检查Checkbox状态并应用
+            const inputs = document.querySelectorAll('input[type="checkbox"]');
+            toggleLayer('red', inputs[0].checked);
+            toggleLayer('blue', inputs[1].checked);
+            toggleLayer('yellow', inputs[2].checked);
+        }
+
+        // 爆炸视图逻辑
+        window.explodeModel = function(val) {
+            const factor = parseFloat(val) * 20; // 最大爆炸距离 20cm
+            
+            allMeshesData.forEach(data => {
+                // 新位置 = 原始位置 + (方向向量 * 爆炸系数)
+                data.mesh.position.copy(data.originalPos).add(data.direction.clone().multiplyScalar(factor));
+            });
+        }
+
+        // 切换模型
+        window.switchModel = function(type) {
+            buildModel(type);
+            document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // 窗口适配
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // 渲染循环
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // 启动
+        buildModel('triangle');
+        animate();
+
+    </script>
+</body>
+</html>
