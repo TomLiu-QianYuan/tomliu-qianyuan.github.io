@@ -9,59 +9,57 @@
 </head>
 <body>
     <div class="dynamic-bg"></div>
-       <nav class="glass-nav">
-    <div class="nav-logo-container">
-        <a href="#" class="nav-logo">TomLiu</a>
-        <span class="nav-subtitle">梦中悟 · 无边众生誓愿度 · 万物与我齐一</span>
-    </div>
-    <div class="nav-links">
-        <a href="#">关于</a>
-        <a href="#">修行</a>
-        <a href="#">宇宙</a>
-    </div>
+    <nav class="glass-nav">
+        <div class="nav-logo-container">
+            <a href="#" class="nav-logo">TomLiu</a>
+            <span class="nav-subtitle">梦中悟 · 无边众生誓愿度 · 万物与我齐一</span>
+        </div>
+        <div class="nav-links">
+            <a href="#">关于</a>
+            <a href="#">修行</a>
+            <a href="#">宇宙</a>
+        </div>
 
-    <!-- 添加语言切换和位置显示容器 -->
-            <div class="nav-utils">
-                <div class="location-container">
-                    <span class="location-icon">📍</span>
-                    <span id="current-location">获取位置中...</span>
-                </div>
-                <div class="language-toggle">
-                    <button class="language-btn active" id="toggle-zh">中</button>
-                    <span>/</span>
-                    <button class="language-btn" id="toggle-en">EN</button>
-                </div>
+      <div class="nav-utils">
+            <div class="version-toggle">
+                <button class="version-btn" id="ver-out" data-ver="out">出世</button>
+                <span>|</span>
+                <button class="version-btn" id="ver-in" data-ver="in">入世</button>
             </div>
-    <!-- 语言切换按钮和位置显示将通过JavaScript动态添加在这里 -->
-</nav> 
+
+            <div class="location-container">
+                <span class="location-icon">📍</span>
+                <span id="current-location">获取位置中...</span>
+            </div>
+            <div class="language-toggle">
+                <button class="language-btn active" id="toggle-zh">中</button>
+                <span>/</span>
+                <button class="language-btn" id="toggle-en">EN</button>
+            </div>
+        </div>
     </nav>
+    
     <main>
-        <!-- 替换 hero-section 部分 -->
         <section class="hero-section">
             <div class="hero-content">
                 <div class="identity-container">
-                    <!-- 名称与身份标识 -->
                     <div class="identity-main">
                         <div class="name-chinese">刘</div>
                         <div class="identity-details">
                             <div class="name-english">Tom Liu</div>
-                            <div class="identity-tags">
+                            <div class="identity-tags" id="identity-tags-container">
                                 <span class="identity-tag">醒悟</span>
-                                <span class="identity-tag">热爱计算机</span>
-                                <span class="identity-tag">热爱黑客技术(免杀)</span>
                                 <span class="identity-tag">自在·无烦恼</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- 引文部分 -->
                     <div class="quote-container">
                         <p class="quote-text">"无所从来，亦无所去"</p>
                         <p class="quote-source">— 如来</p>
                     </div>
                 </div>
                 
-                <!-- 个人格言 -->
                 <div class="motto-container">
                     <p class="motto-line">一切有为法</p>
                     <p class="motto-line">如梦幻泡影</p>
@@ -70,7 +68,6 @@
                 </div>
             </div>
             
-            <!-- 装饰元素 -->
             <div class="hero-decoration">
                 <div class="decoration-circle"></div>
                 <div class="decoration-line"></div>
@@ -78,6 +75,7 @@
         </section>
 
         <div class="sutra-popup"></div>
+
         <section class="cards-section">
             <div class="section-header">
                 <h2>我的维度</h2>
@@ -86,9 +84,8 @@
             </div>
             
             <div class="cards-container">
-                <!-- 第一个卡片带链接 -->
                 <div class="card-wrapper">
-                    <a href="https://tomliu-qianyuan.github.io/yingrou/index.html" class="card-link"> <!-- 使用正确的链接包裹方式 -->                    
+                    <a href="#" class="card-link">
                     <div class="card">
                         <div class="card-decoration"></div>
                         <div class="card-content">
@@ -96,26 +93,7 @@
                             <h3 class="card-title">荧</h3>
                             <p class="card-description">情绪引导的星轨</p>
                             <div class="card-line"></div>
-                            <p class="card-details">在寂静中寻找共鸣，让每一份情绪都有归处</p>
-                        </div>
-                        <div class="card-overlay"></div>
-                        <div class="card-glow"></div>
-                    </div>
-                    </a>
-                </div>
-
-                <!-- 其他卡片无链接 -->
-                <div class="card-wrapper">
-                    <a href="https://qianyuan-yigua.streamlit.app" class="card-link"> <!-- 使用正确的链接包裹方式 -->
-                        
-                    <div class="card">
-                        <div class="card-decoration"></div>
-                        <div class="card-content">
-                            <span class="card-number">02</span>
-                            <h3 class="card-title">卜</h3>
-                            <p class="card-description">有趣的悟道之门</p>
-                            <div class="card-line"></div>
-                            <p class="card-details">梅花一朵，而照万物</p>
+                            <p class="card-details">在寂静中寻找共鸣</p>
                         </div>
                         <div class="card-overlay"></div>
                         <div class="card-glow"></div>
@@ -124,7 +102,24 @@
                 </div>
 
                 <div class="card-wrapper">
-                    <a href="https://github.com/tomliu-qianyuan" class="card-link"> <!-- 使用正确的链接包裹方式 -->
+                    <a href="#" class="card-link">
+                        <div class="card">
+                            <div class="card-decoration"></div>
+                            <div class="card-content">
+                                <span class="card-number">02</span>
+                                <h3 class="card-title">卜</h3>
+                                <p class="card-description">有趣的悟道之门</p>
+                                <div class="card-line"></div>
+                                <p class="card-details">梅花一朵，而照万物</p>
+                            </div>
+                            <div class="card-overlay"></div>
+                            <div class="card-glow"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="card-wrapper">
+                    <a href="https://github.com/tomliu-qianyuan" class="card-link">
                     <div class="card">
                         <div class="card-decoration"></div>
                         <div class="card-content">
@@ -142,6 +137,13 @@
             </div>
         </section>
     </main>
+	
+	
+	
+	<div id="scroll-hint" class="scroll-hint-container">
+        <div class="scroll-arrow"></div>
+        <span class="scroll-text">EXPLORE</span>
+    </div>
 
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
@@ -149,3 +151,12 @@
     <script src="script.js"></script>
 </body>
 </html>
+
+
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>	
+	
