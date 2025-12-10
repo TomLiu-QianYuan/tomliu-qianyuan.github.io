@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA TRADING TERMINAL</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
+    <script src="https://unpkg.com/docx-preview/dist/docx-preview.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-chart-line"></i>
+                <h2>ALPHA TERMINAL</h2>
+            </div>
+            
+            <div class="search-box">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search archive...">
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">REVIEWS</span>
+                    <span class="stat-val" id="count-reviews">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">NOTES</span>
+                    <span class="stat-val" id="count-notes">0</span>
+                </div>
+            </div>
+
+            <div class="scroll-area">
+                <div class="section-header">
+                    <span>SNAPSHOTS</span>
+                    <i class="fa-solid fa-camera-retro"></i>
+                </div>
+                <div id="review-list" class="record-list"></div>
+
+                <div class="section-header mt-20">
+                    <span>KNOWLEDGE BASE</span>
+                    <i class="fa-solid fa-book"></i>
+                </div>
+                <div id="note-list" class="record-list"></div>
+            </div>
+            
+            <div class="footer-status">
+                <div class="status-dot"></div>
+                <span>SYSTEM ONLINE</span>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <header class="top-bar">
+                <div class="current-path" id="current-path">DASHBOARD</div>
+                <div class="system-time" id="system-time">00:00:00</div>
+            </header>
+
+            <article id="viewer">
+                <div class="dashboard-welcome">
+                    <div class="glitch-wrapper">
+                        <div class="glitch" data-text="TRADING_SYSTEM_V2">TRADING_SYSTEM_V2</div>
+                    </div>
+                    <p>Select a file to initiate data visualization.</p>
+                    <div class="key-hints">
+                        <span><i class="fa-regular fa-image"></i> Snapshots</span>
+                        <span><i class="fa-regular fa-file-pdf"></i> PDF</span>
+                        <span><i class="fa-regular fa-file-word"></i> Word</span>
+                        <span><i class="fa-brands fa-markdown"></i> Markdown</span>
+                    </div>
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
