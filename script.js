@@ -79,8 +79,8 @@ const versionConfig = {
             card1: {
                 title: { zh: "易", en: "Exchange" },
                 desc: { zh: "实盘交易复盘", en: "Trading Review" },
-                details: { zh: "把愤怒灌进系统，拿回属于我的尊重", en: "Channel anger into the system." },
-                link: "#"
+                details: { zh: "价格行为学为骨架，订单流为血肉", en: "Price Action and OrderFlow" },
+                link: "https://tomliu-qianyuan.github.io/trading-journal"
             },
             card2: {
                 title: { zh: "荧", en: "Luminescence" },
@@ -500,3 +500,4 @@ function initVisualEffects() {
         });
     });
 }
+
