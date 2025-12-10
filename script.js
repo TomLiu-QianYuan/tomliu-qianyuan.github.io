@@ -1,412 +1,502 @@
-// 地理位置信息显示
+/**
+ * Global State
+ */
 let currentLocation = "";
+let currentVersion = "in"; 
+let currentLanguage = "zh";
+
+/**
+ * Data Sources
+ */
+const heartSutra = [
+    "观自在菩萨，行深般若波罗蜜多时", "照见五蕴皆空，度一切苦厄", "色不异空，空不异色",
+    "色即是空，空即是色", "是诸法空相，不生不灭", "心无罣碍，无罣碍故",
+    "远离颠倒梦想，究竟涅槃", "凡所有相，皆是虚妄", "应无所住，而生其心", "本来无一物，何处惹尘埃"
+];
+
+const powerQuotes = [
+    "知己知彼，百战不殆", "不动如山，侵掠如火", "多算胜，少算不胜", "胜兵先胜而后求战",
+    "止损是入场券", "愤怒是系统的噪音", "极致的理性", "等待，直到确认",
+    "市场永远是对的", "所有的恐惧源于火力不足", "自律即自由", "输出稳定，源于秩序"
+];
+
+const versionConfig = {
+    out: {
+        btnText: { zh: "出世", en: "Transcendent" },
+        subtitle: { zh: "梦中悟 · 无边众生誓愿度 · 万物与我齐一", en: "Awakening in Dreams · All Things and I Are One" },
+        quote: { zh: { text: "无所从来，亦无所去", source: "— 如来" }, en: { text: "Neither coming nor going", source: "— Tathagata" } },
+        navItems: [
+            { key: "navAbout", zh: "关于", en: "About", link: "#" },
+            { key: "navPractice", zh: "修行", en: "Practice", link: "#" },
+            { key: "navUniverse", zh: "宇宙", en: "Universe", link: "#" }
+        ],
+        motto: {
+            zh: ["一切有为法", "如梦幻泡影", "如露亦如电", "应作如是观"],
+            en: ["All conditioned phenomena", "Are like dreams", "Like dew drops", "Contemplate thus"],
+            sourceZh: "", sourceEn: ""
+        },
+        tags: [
+            { zh: "醒悟", en: "Awakened", hoverZh: "", hoverEn: "" },
+            { zh: "自在·无烦恼", en: "Carefree", hoverZh: "", hoverEn: "" }
+        ],
+        cards: {
+            card1: {
+                title: { zh: "荧", en: "Luminescence" },
+                desc: { zh: "情绪引导的星轨", en: "Star Trails of Emotion" },
+                details: { zh: "在寂静中寻找共鸣，让每一份情绪都有归处", en: "Find resonance in silence." },
+                link: "https://tomliu-qianyuan.github.io/yingrou/index.html"
+            },
+            card2: {
+                title: { zh: "卜", en: "Divination" },
+                desc: { zh: "有趣的悟道之门", en: "Gate to Enlightenment" },
+                details: { zh: "梅花一朵，而照万物", en: "Reflecting the Universe" },
+                link: "https://qianyuan-yigua.streamlit.app"
+            }
+        }
+    },
+    in: {
+        btnText: { zh: "入世", en: "Worldly" },
+        subtitle: { zh: "绝对理性 · 极致执行 · 强者为尊", en: "Rationality · Execution · Discipline" },
+        quote: { zh: { text: "输出稳定，源于内在秩序", source: "— Alpha" }, en: { text: "Stability comes from Order", source: "— Alpha" } },
+        navItems: [
+            { key: "navAbout", zh: "关于", en: "About", link: "#" },
+            { key: "navTrading", zh: "交易", en: "Trading", link: "#" },
+            { key: "navFitness", zh: "健身", en: "Fitness", link: "#" }
+        ],
+        motto: {
+            zh: ["其疾如风", "其徐如林", "侵掠如火", "不动如山"],
+            en: ["Swift as Wind", "Gentle as Forest", "Fierce as Fire", "Solid as Mountain"],
+            sourceZh: "", sourceEn: ""
+        },
+        tags: [
+            { zh: "Alpha", en: "Alpha", hoverZh: "强势文化LeonG", hoverEn: "Dominant Culture: LeonG" },
+            { zh: "交易", en: "Trading", hoverZh: "阿尔布鲁克斯，价格行为学；订单流", hoverEn: "Al Brooks PA; Order Flow" },
+            { zh: "征服", en: "Conquest", hoverZh: "征服", hoverEn: "Conquest" },
+            { zh: "健身", en: "Fitness", hoverZh: "徒手", hoverEn: "Callisthenics" },
+            { zh: "免杀", en: "Evasion", hoverZh: "suxyds", hoverEn: "suxyds" }
+        ],
+        cards: {
+            card1: {
+                title: { zh: "易", en: "Exchange" },
+                desc: { zh: "实盘交易复盘", en: "Trading Review" },
+                details: { zh: "把愤怒灌进系统，拿回属于我的尊重", en: "Channel anger into the system." },
+                link: "#"
+            },
+            card2: {
+                title: { zh: "荧", en: "Luminescence" },
+                desc: { zh: "情绪引导的星轨", en: "Star Trails of Emotion" },
+                details: { zh: "在寂静中寻找共鸣", en: "Find resonance in silence." },
+                link: "https://tomliu-qianyuan.github.io/yingrou/index.html"
+            }
+        }
+    }
+};
+
+const translations = {
+    "zh": {
+        "title": "TomLiu | 万物与我齐一",
+        "nameChinese": "刘",
+        "nameEnglish": "Tom Liu",
+        "sectionTitle": "我的维度",
+        "sectionDescription": "点击不同维度探索我的精神世界",
+        "card3Title": "码",
+        "card3Desc": "更多项目",
+        "card3Details": "挖掘我的代码世界",
+        "guideItem1": "右上角切换【出世/入世】状态及语言。",
+        "clickHint": "点击任意位置继续",
+    },
+    "en": {
+        "title": "TomLiu | All Things and I Are One",
+        "nameChinese": "Liu",
+        "nameEnglish": "Tom Liu",
+        "sectionTitle": "My Dimensions",
+        "sectionDescription": "Explore my spiritual world",
+        "card3Title": "Code",
+        "card3Desc": "More Projects",
+        "card3Details": "Explore my code world",
+        "guideItem1": "Top right to switch Dimension/Language.",
+        "clickHint": "CLICK ANYWHERE TO CONTINUE",
+    }
+};
+
+/**
+ * Core Functions
+ */
 async function showUserLocation() {
     try {
         const position = await new Promise((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(resolve, reject);
         });
-        
-        // 使用逆地理编码API获取位置信息
         const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=auto`);
         const data = await response.json();
-        
-        // 从响应中提取有用的位置信息
-        const locationParts = [];
-        if (data.city) locationParts.push(data.city);
-        if (data.principalSubdivision) locationParts.push(data.principalSubdivision);
-        if (data.countryName) locationParts.push(data.countryName);
-        
+        const locationParts = [data.city, data.countryName].filter(Boolean);
         currentLocation = locationParts.join(", ");
-        
-        // 更新位置显示
         updateLocationDisplay();
-        
-        return currentLocation;
-    } catch (error) {
-        console.error("获取地理位置失败:", error);
-        currentLocation = "位置未知";
+    } catch (e) {
+        currentLocation = "Unknown Location";
         updateLocationDisplay();
-        return null;
-    }
-}
-function updateLocationDisplay() {
-    const locationDisplay = document.getElementById('current-location');
-    if (locationDisplay) {
-        locationDisplay.textContent = currentLocation;
-        
-        // 根据语言环境调整样式
-        const isChinese = document.documentElement.lang === 'zh';
-        locationDisplay.style.fontFamily = isChinese ? "'Noto Serif SC', serif" : "inherit";
-        locationDisplay.style.fontSize = isChinese ? "0.85rem" : "0.8rem";
     }
 }
 
-// 地区检测与翻译功能
+function updateLocationDisplay() {
+    const el = document.getElementById('current-location');
+    if (el) el.textContent = currentLocation;
+}
+
 function detectUserLocation() {
     showUserLocation();
-    
-    return new Promise((resolve) => {
-        // 首先检查是否已有用户偏好设置
-        const userPreference = localStorage.getItem('languagePreference');
-        if (userPreference) {
-            resolve(userPreference === 'en' ? 'en' : 'zh');
-            return;
-        }
-
-        // 如果没有设置，尝试通过IP检测地区
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    // 使用逆地理编码API获取国家代码
-                    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=zh`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const countryCode = data.countryCode;
-                            resolve(countryCode === 'CN' ? 'zh' : 'en');
-                        })
-                        .catch(() => {
-                            // API失败时默认为中文
-                            resolve('zh');
-                        });
-                },
-                () => {
-                    // 地理位置获取失败，使用备用方案
-                    useBackupLocationDetection().then(resolve);
-                }
-            );
-        } else {
-            // 浏览器不支持地理位置，使用备用方案
-            useBackupLocationDetection().then(resolve);
-        }
+    return new Promise(resolve => {
+        const pref = localStorage.getItem('languagePreference');
+        resolve(pref || 'zh');
     });
 }
 
-// 备用地区检测方案
-function useBackupLocationDetection() {
-    return new Promise((resolve) => {
-        // 检查浏览器语言设置
-        const browserLanguage = navigator.language || navigator.userLanguage;
-        if (browserLanguage.startsWith('zh')) {
-            resolve('zh');
-            return;
-        }
-
-        // 使用第三方IP地理位置API
-        fetch('https://ipapi.co/json/')
-            .then(response => response.json())
-            .then(data => {
-                resolve(data.country === 'CN' ? 'zh' : 'en');
-            })
-            .catch(() => {
-                // 所有方法都失败时默认为中文
-                resolve('zh');
-            });
-    });
-}
-
-// 翻译映射表
-const translations = {
-    "zh": {
-        "title": "TomLiu | 万物与我齐一",
-        "navSubtitle": "梦中悟 · 无边众生誓愿度 · 万物与我齐一",
-        "navAbout": "关于",
-        "navPractice": "修行",
-        "navUniverse": "宇宙",
-        "nameChinese": "刘",
-        "nameEnglish": "Tom Liu",
-        "identityTag1": "醒悟",
-        "identityTag2": "热爱计算机",
-        "identityTag3": "热爱黑客技术(免杀)",
-        "identityTag4": "自在·无烦恼",
-        "quoteText": "无所从来，亦无所去",
-        "quoteSource": "— 如来",
-        "mottoLine1": "一切有为法",
-        "mottoLine2": "如梦幻泡影",
-        "mottoLine3": "如露亦如电",
-        "mottoLine4": "应作如是观",
-        "sectionTitle": "我的维度",
-        "sectionDescription": "点击不同维度探索我的精神世界",
-        "card1Title": "荧",
-        "card1Desc": "情绪引导的星轨",
-        "card1Details": "在寂静中寻找共鸣，让每一份情绪都有归处",
-        "card2Title": "卜", 
-        "card2Desc": "有趣的悟道之门",
-        "card2Details": "梅花一朵，而照万物",
-        "card3Title": "码",
-        "card3Desc": "探索我的更多项目",
-        "card3Details": "我的所有项目，待你挖掘"
-    },
-    "en": {
-        "title": "TomLiu | All Things and I Are One",
-        "navSubtitle": "Awakening in Dreams · Vow to Save All Beings · All Things and I Are One",
-        "navAbout": "About",
-        "navPractice": "Practice",
-        "navUniverse": "Universe",
-        "nameChinese": "Liu",
-        "nameEnglish": "Tom Liu",
-        "identityTag1": "Awakening",
-        "identityTag2": "Passionate about Computing",
-        "identityTag3": "Passionate about Hacking (AV Evasion)",
-        "identityTag4": "Free from Worries",
-        "quoteText": "Neither coming nor going",
-        "quoteSource": "— Tathagata",
-        "mottoLine1": "All conditioned phenomena",
-        "m mottoLine2": "Are like dreams, illusions, bubbles, shadows",
-        "mottoLine3": "Like dew drops and a lightning flash",
-        "mottoLine4": "You should contemplate them thus",
-        "sectionTitle": "My Dimensions",
-        "sectionDescription": "Click on different dimensions to explore my spiritual world",
-        "card1Title": "Luminescence",
-        "card1Desc": "Star Trails Guided by Emotions",
-        "card1Details": "Find resonance in silence, give every emotion its place",
-        "card2Title": "Divination",
-        "card2Desc": "The Interesting Gate to Enlightenment",
-        "card2Details": "A single plum blossom reflects all things",
-        "card3Title": "Code",
-        "card3Desc": "Explore My More Projects",
-        "card3Details": "All my projects waiting for you to discover"
-    },
-    "heartSutra": [
-        "The Bodhisattva Avalokiteshvara, moving in the deep course of Prajna Paramita, sees the five skandhas are empty.",
-        "Sariputra, form does not differ from emptiness, emptiness does not differ from form. The same is true of feelings, perceptions, impulses, consciousness.",
-        "Sariputra, the characteristics of the voidness of all dharmas are non-arising, non-ceasing, non-defiled, non-pure, non-increasing, non-decreasing.",
-        "Therefore, in emptiness there is no form, no feeling, no perception, no formation, no consciousness.",
-        "No eye, ear, nose, tongue, body, mind; no form, sound, smell, taste, touch, phenomena.",
-        "No realm of sight, no realm of consciousness, no ignorance, no end to ignorance, no old age and death, no end to old age and death.",
-        "The Bodhisattva relies on Prajna Paramita and thus the mind is without hindrance. Without hindrance, there is no fear.",
-        "All Buddhas of past, present and future rely on Prajna Paramita to attain Anuttara Samyak Sambodhi.",
-        "Therefore know that Prajna Paramita is the great divine mantra, the great bright mantra, the supreme mantra, the incomparable mantra, which removes all suffering.",
-        "The mantra is proclaimed: gate gate paragate parasamgate bodhi svaha."
-    ]
-};
-
-// 翻译页面内容
 function translatePage(language) {
-    // 设置HTML lang属性
+    currentLanguage = language;
     document.documentElement.lang = language;
+    const t = translations[language];
+
+    document.title = t.title;
+    document.getElementById('toggle-zh')?.classList.toggle('active', language === 'zh');
+    document.getElementById('toggle-en')?.classList.toggle('active', language === 'en');
     
-    // 更新标题
-    document.title = translations[language].title;
-    // 更新活动按钮状态
-    document.getElementById('toggle-zh').classList.toggle('active', language === 'zh');
-    document.getElementById('toggle-en').classList.toggle('active', language === 'en');
-  
-    // 导航栏
-    document.querySelector('.nav-subtitle').textContent = translations[language].navSubtitle;
-    const navLinks = document.querySelectorAll('.nav-links a');
-    navLinks[0].textContent = translations[language].navAbout;
-    navLinks[1].textContent = translations[language].navPractice;
-    navLinks[2].textContent = translations[language].navUniverse;
-    
-    // 身份信息
-    document.querySelector('.name-chinese').textContent = translations[language].nameChinese;
-    document.querySelector('.name-english').textContent = translations[language].nameEnglish;
-    
-    // 身份标签
-    const identityTags = document.querySelectorAll('.identity-tag');
-    identityTags[0].textContent = translations[language].identityTag1;
-    identityTags[1].textContent = translations[language].identityTag2;
-    identityTags[2].textContent = translations[language].identityTag3;
-    identityTags[3].textContent = translations[language].identityTag4;
-    
-    // 引文
-    document.querySelector('.quote-text').textContent = `"${translations[language].quoteText}"`;
-    document.querySelector('.quote-source').textContent = translations[language].quoteSource;
-    
-    // 格言
-    const mottoLines = document.querySelectorAll('.motto-line');
-    mottoLines[0].textContent = translations[language].mottoLine1;
-    mottoLines[1].textContent = translations[language].mottoLine2;
-    mottoLines[2].textContent = translations[language].mottoLine3;
-    mottoLines[3].textContent = translations[language].mottoLine4;
-    
-    // 卡片部分
-    document.querySelector('.section-header h2').textContent = translations[language].sectionTitle;
-    document.querySelector('.section-description').textContent = translations[language].sectionDescription;
+    document.querySelector('.name-chinese').textContent = t.nameChinese;
+    document.querySelector('.name-english').textContent = t.nameEnglish;
+    document.querySelector('.section-header h2').textContent = t.sectionTitle;
+    document.querySelector('.section-description').textContent = t.sectionDescription;
     
     const cards = document.querySelectorAll('.card');
-    cards[0].querySelector('.card-title').textContent = translations[language].card1Title;
-    cards[0].querySelector('.card-description').textContent = translations[language].card1Desc;
-    cards[0].querySelector('.card-details').textContent = translations[language].card1Details;
-    
-    cards[1].querySelector('.card-title').textContent = translations[language].card2Title;
-    cards[1].querySelector('.card-description').textContent = translations[language].card2Desc;
-    cards[1].querySelector('.card-details').textContent = translations[language].card2Details;
-    
-    cards[2].querySelector('.card-title').textContent = translations[language].card3Title;
-    cards[2].querySelector('.card-description').textContent = translations[language].card3Desc;
-    cards[2].querySelector('.card-details').textContent = translations[language].card3Details;
-    
-    // 更新心经内容
-    if (language === 'en') {
-        heartSutra = translations.heartSutra;
+    if(cards.length >= 3) {
+        cards[2].querySelector('.card-title').textContent = t.card3Title;
+        cards[2].querySelector('.card-description').textContent = t.card3Desc;
+        cards[2].querySelector('.card-details').textContent = t.card3Details;
     }
-    
-    // 保存用户语言偏好
+
+    applyVersionContent(currentVersion);
     localStorage.setItem('languagePreference', language);
-    updateLocationDisplay();
 }
 
-// 添加语言切换按钮
-function addLanguageToggle() {
-    const navContainer = document.querySelector('.nav-container');
-    const languageToggle = document.createElement('div');
-    languageToggle.className = 'language-toggle';
-    languageToggle.innerHTML = `
-        <button class="language-btn" id="toggle-en">EN</button>
-        <span>/</span>
-        <button class="language-btn" id="toggle-zh">中文</button>
-    `;
-    navContainer.querySelector('nav').appendChild(languageToggle);
-    
-    document.getElementById('toggle-en').addEventListener('click', () => {
-        translatePage('en');
-    });
-    
-    document.getElementById('toggle-zh').addEventListener('click', () => {
-        translatePage('zh');
-    });
+function switchVersion(version) {
+    currentVersion = version;
+    document.body.classList.remove('mode-in', 'mode-out');
+    document.body.classList.add(version === 'in' ? 'mode-in' : 'mode-out');
+    document.getElementById('ver-out')?.classList.toggle('active', version === 'out');
+    document.getElementById('ver-in')?.classList.toggle('active', version === 'in');
+    applyVersionContent(version);
 }
 
-// 其余原有代码保持不变...
-// 添加位置显示元素
-function addLocationDisplay() {
-    const nav = document.querySelector('.glass-nav');
-    if (nav) {
-        const locationContainer = document.createElement('div');
-        locationContainer.className = 'location-container';
-        locationContainer.innerHTML = `
-            <span class="location-icon">📍</span>
-            <span id="current-location">获取位置中...</span>
-        `;
-        nav.appendChild(locationContainer);
-    }
-}
-document.addEventListener('DOMContentLoaded', async function() {
-    // 检测用户位置并翻译
-    const userLanguage = await detectUserLocation();
-    translatePage(userLanguage);
+function applyVersionContent(version) {
+    const data = versionConfig[version];
+    const lang = currentLanguage;
+
+    const btnOut = document.getElementById('ver-out');
+    const btnIn = document.getElementById('ver-in');
+    if(btnOut) btnOut.textContent = versionConfig.out.btnText[lang];
+    if(btnIn) btnIn.textContent = versionConfig.in.btnText[lang];
+
+    const quoteText = document.querySelector('.quote-text');
+    const quoteSource = document.querySelector('.quote-source');
+    const subTitle = document.querySelector('.nav-subtitle');
     
-    // 添加语言切换事件
-    document.getElementById('toggle-en').addEventListener('click', () => {
-        translatePage('en');
-    });
-    
-    document.getElementById('toggle-zh').addEventListener('click', () => {
-        translatePage('zh');
-    });
-    // 添加语言切换按钮
-    addLanguageToggle();
-    addLocationDisplay();
-    // 高级光标效果
-    const cursor = document.querySelector('.cursor');
-    const cursorFollower = document.querySelector('.cursor-follower');
-    
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = `${e.clientX}px`;
-        cursor.style.top = `${e.clientY}px`;
-        
-        cursorFollower.style.left = `${e.clientX}px`;
-        cursorFollower.style.top = `${e.clientY}px`;
-    });
-    
-    // 将原来的cards选择器改为
-    const cards = document.querySelectorAll('.card-wrapper');
-        // 修改事件监听逻辑（替换现有cards.forEach部分）
-        cards.forEach((wrapper) => {
-            const card = wrapper.querySelector('.card');
-            const link = wrapper.querySelector('.card-link');
-            
-            const target = link ? link : card;
-            
-            target.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                // 保持原有转换逻辑...
-            });
-            
-            target.addEventListener('mouseleave', () => {
-            // 保持原有重置逻辑...
-        });
-    });
-    // // 为无链接卡片添加点击反馈
-    // document.querySelectorAll('.card-wrapper:not(:first-child) .card').forEach(card => {
-    //     card.addEventListener('click', (e) => {
-    //         e.preventDefault();
-    //         card.style.transform = 'translateY(-10px) scale(0.98)';
-    //         setTimeout(() => {
-    //             card.style.transform = 'translateY(-20px) rotateX(0) rotateY(0)';
-    //         }, 150);
-    //     });
-    // });
-    
-    // 导航栏滚动效果
-    const nav = document.querySelector('.glass-nav');
-    
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            nav.style.padding = '1rem 3rem';
-            nav.style.borderBottom = '1px solid rgba(194, 184, 168, 0.2)';
-        } else {
-            nav.style.padding = '2rem 3rem';
-            nav.style.borderBottom = '1px solid rgba(194, 184, 168, 0.1)';
+    if(quoteText) quoteText.textContent = `"${data.quote[lang].text}"`;
+    if(quoteSource) quoteSource.textContent = data.quote[lang].source;
+    if(subTitle) subTitle.textContent = data.subtitle[lang];
+
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach((link, i) => {
+        if(data.navItems[i]) {
+            link.textContent = data.navItems[i][lang];
+            link.href = data.navItems[i].link;
         }
     });
-    
-    // 页面淡入效果
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        document.body.style.transition = 'opacity 1s ease';
-        document.body.style.opacity = '1';
-    }, 100);
-});
 
-// 心经内容数组
-const heartSutra = [
-    "观自在菩萨，行深般若波罗蜜多时，照见五蕴皆空，度一切苦厄。",
-    "舍利子，色不异空，空不异色，色即是空，空即是色，受想行识，亦复如是。",
-    "舍利子，是诸法空相，不生不灭，不垢不净，不增不减。",
-    "是故空中无色，无受想行识，无眼耳鼻舌身意，无色声香味触法。",
-    "无眼界，乃至无意识界，无无明，亦无无明尽，乃至无老死，亦无老死尽。",
-    "无苦集灭道，无智亦无得，以无所得故。",
-    "菩提萨埵，依般若波罗蜜多故，心无罣碍。无罣碍故，无有恐怖，远离颠倒梦想，究竟涅槃。",
-    "三世诸佛，依般若波罗蜜多故，得阿耨多罗三藐三菩提。",
-    "故知般若波罗蜜多，是大神咒，是大明咒，是无上咒，是无等等咒，能除一切苦，真实不虚。",
-    "故说般若波罗蜜多咒，即说咒曰：揭谛揭谛，波罗揭谛，波罗僧揭谛，菩提萨婆诃。"
-];
-
-
-// 页面加载动画
-window.addEventListener('load', function() {
-    // 右侧描述文字逐个出现
-    const descriptions = document.querySelectorAll('.title-description');
-    descriptions.forEach((desc, index) => {
-        setTimeout(() => {
-            desc.style.opacity = '0.9';
-            desc.style.transform = 'translateX(0)';
-        }, 600 + index * 200);
+    const mottoLines = document.querySelectorAll('.motto-line');
+    mottoLines.forEach((line, i) => {
+        if(data.motto[lang][i]) {
+            line.textContent = data.motto[lang][i];
+            const sourceKey = lang === 'zh' ? 'sourceZh' : 'sourceEn';
+            if (data.motto[sourceKey]) {
+                line.setAttribute('data-tooltip', data.motto[sourceKey]);
+            } else {
+                line.removeAttribute('data-tooltip');
+            }
+        }
     });
+
+    const tagsContainer = document.querySelector('.identity-tags');
+    if(tagsContainer) {
+        tagsContainer.innerHTML = '';
+        data.tags.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'identity-tag';
+            span.textContent = tag[lang];
+            const hoverKey = lang === 'zh' ? 'hoverZh' : 'hoverEn';
+            if (tag[hoverKey]) span.setAttribute('data-tooltip', tag[hoverKey]);
+            tagsContainer.appendChild(span);
+        });
+    }
+
+    const cardWrappers = document.querySelectorAll('.card-wrapper');
+    if (cardWrappers.length >= 2) {
+        const c1Data = data.cards.card1;
+        cardWrappers[0].querySelector('.card-title').textContent = c1Data.title[lang];
+        cardWrappers[0].querySelector('.card-description').textContent = c1Data.desc[lang];
+        cardWrappers[0].querySelector('.card-details').textContent = c1Data.details[lang];
+        cardWrappers[0].querySelector('.card-link').href = c1Data.link;
+
+        const c2Data = data.cards.card2;
+        cardWrappers[1].querySelector('.card-title').textContent = c2Data.title[lang];
+        cardWrappers[1].querySelector('.card-description').textContent = c2Data.desc[lang];
+        cardWrappers[1].querySelector('.card-details').textContent = c2Data.details[lang];
+        cardWrappers[1].querySelector('.card-link').href = c2Data.link;
+    }
+}
+
+/**
+ * --- 聚光灯式引导 (Spotlight Guide V2) ---
+ * 逻辑：只引导右上角开关，不再强制引导下滑
+ */
+function checkAndShowGuide(lang) {
+    // localStorage.removeItem('hasSeenV2Guide'); 
+
+    const hasSeenGuide = localStorage.getItem('hasSeenV2Guide');
+    
+    if (!hasSeenGuide) {
+        const t = translations[lang];
+
+        const steps = [
+            { 
+                target: '.version-toggle', 
+                text: t.guideItem1, 
+                shape: 'rect',
+                padding: 10,
+                type: 'click' 
+            }
+        ];
+
+        let currentStepIndex = 0;
+
+        // 创建 DOM
+        const spotlight = document.createElement('div');
+        spotlight.className = 'guide-spotlight';
+        
+        const textContainer = document.createElement('div');
+        textContainer.className = 'guide-text-container';
+        spotlight.appendChild(textContainer);
+        
+        const clickLayer = document.createElement('div');
+        clickLayer.className = 'guide-click-layer';
+
+        document.body.appendChild(clickLayer);
+        document.body.appendChild(spotlight);
+
+        // 移动光圈核心函数
+        const moveSpotlightTo = (stepIndex) => {
+            if (stepIndex >= steps.length) {
+                endGuide();
+                return;
+            }
+
+            const step = steps[stepIndex];
+            const targetEl = document.querySelector(step.target);
+
+            if (!targetEl) {
+                endGuide(); 
+                return;
+            }
+
+            // 计算位置
+            const rect = targetEl.getBoundingClientRect();
+            const padding = step.padding || 20;
+
+            spotlight.style.width = `${rect.width + padding * 2}px`;
+            spotlight.style.height = `${rect.height + padding * 2}px`;
+            spotlight.style.top = `${rect.top - padding}px`;
+            spotlight.style.left = `${rect.left - padding}px`;
+
+            if (step.shape === 'circle') spotlight.classList.add('circle');
+            else spotlight.classList.remove('circle');
+
+            // 渲染文字与提示
+            textContainer.innerHTML = `
+                <div class="guide-text-body">${step.text}</div>
+                <span class="guide-text-hint click-hint">${t.clickHint}</span>
+            `;
+            clickLayer.style.display = 'block';
+            
+            spotlight.classList.add('active');
+        };
+
+        // 结束引导
+        const endGuide = () => {
+            spotlight.style.opacity = '0';
+            clickLayer.style.display = 'none';
+            
+            setTimeout(() => {
+                spotlight.remove();
+                clickLayer.remove();
+            }, 600);
+            localStorage.setItem('hasSeenV2Guide', 'true');
+        };
+
+        // 点击层事件
+        clickLayer.addEventListener('click', () => {
+            currentStepIndex++;
+            moveSpotlightTo(currentStepIndex);
+        });
+        
+        // Resize 重新计算位置
+        window.addEventListener('resize', () => {
+            if(document.body.contains(spotlight)) {
+                moveSpotlightTo(currentStepIndex);
+            }
+        });
+
+        // 启动
+        setTimeout(() => moveSpotlightTo(0), 100);
+    }
+}
+
+/**
+ * --- 下滑提示 (Zen Scroll Hint) ---
+ * 逻辑：未下滑过 -> 显示 -> 一旦监测滚动 -> 永久消失
+ */
+function initScrollHint() {
+    const hasScrolled = localStorage.getItem('hasGlobalScrolled');
+    const hintEl = document.getElementById('scroll-hint');
+
+    // 如果已经滑过或找不到元素，不执行
+    if (hasScrolled || !hintEl) {
+        if(hintEl) hintEl.remove();
+        return;
+    }
+
+    // 1. 延迟显示，营造呼吸感
+    setTimeout(() => {
+        hintEl.classList.add('visible');
+    }, 1500);
+
+    // 2. 监听滚动事件
+    const handleScrollOnce = () => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // 阈值设为 50px，避免微小震动触发
+        if (scrollTop > 50) {
+            hintEl.classList.remove('visible');
+            hintEl.classList.add('vanish');
+            
+            // 写入永久标记
+            localStorage.setItem('hasGlobalScrolled', 'true');
+            
+            // 移除监听
+            window.removeEventListener('scroll', handleScrollOnce);
+            
+            // 动画结束后从 DOM 移除
+            setTimeout(() => {
+                hintEl.remove();
+            }, 1000);
+        }
+    };
+
+    window.addEventListener('scroll', handleScrollOnce, { passive: true });
+}
+
+/**
+ * Event Listeners
+ */
+document.addEventListener('DOMContentLoaded', async function() {
+    const userLanguage = await detectUserLocation();
+    
+    document.getElementById('toggle-en')?.addEventListener('click', () => translatePage('en'));
+    document.getElementById('toggle-zh')?.addEventListener('click', () => translatePage('zh'));
+    document.getElementById('ver-out')?.addEventListener('click', () => switchVersion('out'));
+    document.getElementById('ver-in')?.addEventListener('click', () => switchVersion('in'));
+
+    translatePage(userLanguage);
+    switchVersion(currentVersion); 
+
+    initVisualEffects();
+    
+    // 启动引导
+    setTimeout(() => checkAndShowGuide(userLanguage), 800);
+    // 启动下滑提示
+    initScrollHint();
 });
 
-// 替换原有的 click 事件监听代码为：
 document.addEventListener('click', function(e) {
-    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('.card')) return;
-    
+    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('.card') || e.target.closest('.guide-click-layer')) return;
+
+    // 入世模式特效：Alpha 语录浮现
+    if (currentVersion === 'in') {
+        const text = powerQuotes[Math.floor(Math.random() * powerQuotes.length)];
+        const pop = document.createElement('div');
+        pop.className = 'alpha-popup';
+        pop.textContent = text;
+        pop.style.left = `${e.clientX}px`;
+        pop.style.top = `${e.clientY}px`;
+        pop.style.animation = `alpha-fade-up 2.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards`;
+        document.body.appendChild(pop);
+        setTimeout(() => pop.remove(), 2500);
+        return;
+    }
+
+    // 出世模式特效：心经浮现
     const popup = document.querySelector('.sutra-popup');
-    const randomSutra = heartSutra[Math.floor(Math.random() * heartSutra.length)];
-    
-    // 直接使用点击坐标（不再随机）
-    popup.style.left = `${e.clientX}px`;
-    popup.style.top = `${e.clientY}px`;
-    
-    popup.textContent = randomSutra;
-    popup.style.opacity = '0.9';
-    popup.style.transform = 'translate(-50%, -50%) scale(1)';
-    
-    // 1秒后消失
-    setTimeout(() => {
-        popup.style.opacity = '0';
-        popup.style.transform = 'translate(-50%, -50%) scale(0.9)';
-    }, 1000);  // 严格1秒
+    if(popup) {
+        const text = heartSutra[Math.floor(Math.random() * heartSutra.length)];
+        popup.style.left = `${e.clientX}px`;
+        popup.style.top = `${e.clientY}px`;
+        popup.textContent = text;
+        popup.style.opacity = '0.9';
+        popup.style.transform = 'translate(-50%, -50%) scale(1)';
+        setTimeout(() => {
+            popup.style.opacity = '0';
+            popup.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        }, 1500);
+    }
 });
+
+function initVisualEffects() {
+    const cursor = document.querySelector('.cursor');
+    const cursorFollower = document.querySelector('.cursor-follower');
+    if(cursor) {
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
+            setTimeout(() => {
+                if(cursorFollower) {
+                    cursorFollower.style.left = `${e.clientX}px`;
+                    cursorFollower.style.top = `${e.clientY}px`;
+                }
+            }, 50);
+        });
+    }
+    
+    const cards = document.querySelectorAll('.card-wrapper');
+    cards.forEach((wrapper) => {
+        const card = wrapper.querySelector('.card');
+        wrapper.addEventListener('mousemove', (e) => {
+            // 在入世模式下，减少 3D 倾斜幅度，保持冷静
+            const limit = currentVersion === 'in' ? 2 : 5; 
+            
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -limit;
+            const rotateY = ((x - centerX) / centerX) * limit;
+            
+            // 入世模式：平移+微倾斜；出世模式：旋转+平移
+            if (currentVersion === 'in') {
+                card.style.transform = `translate(-5px, -5px)`; 
+            } else {
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+            }
+        });
+        
+        wrapper.addEventListener('mouseleave', () => {
+             card.style.transform = 'none'; // 重置
+        });
+    });
+}
