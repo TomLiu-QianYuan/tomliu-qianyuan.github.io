@@ -107,7 +107,7 @@ const versionConfig = {
             card1: {
                 title: { zh: "易", en: "Exchange" },
                 desc: { zh: "实盘交易复盘", en: "Trading Review" },
-                details: { zh: "把愤怒灌进系统，拿回属于我的尊重", en: "Channel anger into the system." },
+                details: { zh: "阿尔布鲁克斯（价格行为学）+德湃（订单行为学）", en: "Al Brooks(Price Action)+Delta Apex(OrderFlow Action)." },
                 link: "https://tomliu-qianyuan.github.io/trading-journal"
             },
             card2: {
@@ -528,3 +528,4 @@ function initVisualEffects() {
         });
     });
 }
+
