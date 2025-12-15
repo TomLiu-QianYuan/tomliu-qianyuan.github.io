@@ -119,9 +119,9 @@
   "notes": [
     {
       "title": "50%回调",
-      "filename": "50%回调.pdf",
-      "ext": ".pdf",
-      "path": "posts/notes/50%25%E5%9B%9E%E8%B0%83.pdf"
+      "filename": "50%回调.docx",
+      "ext": ".docx",
+      "path": "posts/notes/50%25%E5%9B%9E%E8%B0%83.docx"
     },
     {
       "title": "k线",
@@ -167,4 +167,5 @@
     }
   ],
   "updated_at": 0.0
+
 }
