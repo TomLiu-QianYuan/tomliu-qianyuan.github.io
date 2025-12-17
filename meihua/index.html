@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乾元 · 易</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 农历库 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+    <!-- 截图库 -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #d4af37;
+            --red: #ef4444;
+            --bg: #050505;
+            --text-main: #d1d5db;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* 隐形滚动条 */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+        /* 输入框：虚空风格 */
+        .input-void {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            color: #fff;
+            text-align: center;
+            outline: none;
+            transition: all 0.6s ease;
+            font-family: inherit;
+        }
+        .input-void:focus { border-bottom-color: var(--gold); }
+        .input-void::placeholder { color: #333; font-weight: 200; }
+
+        /* 按钮：灵动风格 */
+        .btn-spirit {
+            border: 1px solid #333;
+            color: #666;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+        .btn-spirit:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        /* --- 卦象绘制 (独立DOM，无伪元素冲突) --- */
+        .gua-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 12px;
+            position: relative;
+        }
+        .gua-grid {
+            display: flex;
+            flex-direction: column;
+            width: 72px; 
+            gap: 8px;
+        }
+        .gua-row {
+            height: 10px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            width: 100%;
+        }
+        .bar {
+            background-color: var(--gold);
+            height: 100%;
+            border-radius: 1px;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.15);
+            opacity: 0.95;
+        }
+        .yang-line .bar { width: 100%; }
+        .yin-line .bar { width: 42%; }
+
+        /* 动爻红点 */
+        .moving-dot {
+            position: absolute;
+            right: -24px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--red);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--red);
+        }
+
+        /* 动画类 */
+        .fade-in-up { animation: fadeInUp 1s ease forwards; opacity: 0; transform: translateY(20px); }
+        .fade-out { animation: fadeOut 0.8s ease forwards; pointer-events: none; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
+
+        /* 高亮标记 */
+        .mark-good { color: #a7f3d0; text-shadow: 0 0 5px rgba(167, 243, 208, 0.1); }
+        .mark-bad { color: #fca5a5; text-shadow: 0 0 5px rgba(252, 165, 165, 0.1); }
+        .mark-gold { color: var(--gold); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- 顶部 LOGO -->
+    <header class="fixed top-8 left-0 right-0 text-center z-50">
+        <h1 class="text-2xl font-light tracking-[0.8em] text-[#d4af37] opacity-80 cursor-pointer hover:opacity-100 transition-opacity" onclick="resetApp()">乾 元</h1>
+    </header>
+
+    <!-- 主容器 -->
+    <main class="w-full max-w-6xl relative flex items-center justify-center min-h-[600px]">
+
+        <!-- 场景1：输入界面 -->
+        <div id="scene-input" class="w-full max-w-lg text-center transition-all duration-700 space-y-12">
+            <div class="space-y-2 opacity-60">
+                <p class="text-xs tracking-[0.2em] font-light">一物从来有一身</p>
+                <p class="text-xs tracking-[0.2em] font-light">一身还有一乾坤</p>
+            </div>
+
+            <div class="flex justify-center space-x-8 text-xs text-gray-500">
+                <button onclick="setMode('time')" id="btn-mode-time" class="hover:text-[#d4af37] transition-colors text-[#d4af37]">时间起卦</button>
+                <button onclick="setMode('number')" id="btn-mode-number" class="hover:text-[#d4af37] transition-colors">报数起卦</button>
+                <button onclick="setMode('random')" id="btn-mode-random" class="hover:text-[#d4af37] transition-colors">心动占测</button>
+            </div>
+
+            <div class="h-20 flex items-center justify-center">
+                <div id="input-group-time" class="w-full">
+                    <input type="datetime-local" id="inp-time" class="input-void w-64 text-sm text-gray-400 font-light">
+                </div>
+                <div id="input-group-number" class="hidden flex space-x-6">
+                    <input type="number" id="n1" placeholder="上" class="input-void w-16 text-xl">
+                    <input type="number" id="n2" placeholder="下" class="input-void w-16 text-xl">
+                    <input type="number" id="n3" placeholder="动" class="input-void w-16 text-xl">
+                </div>
+                <div id="input-group-random" class="hidden text-gray-500 font-light text-sm italic">
+                    凝神静气，点击下方感应
+                </div>
+            </div>
+
+            <div class="relative w-64 mx-auto">
+                <input type="text" id="inp-question" placeholder="所问何事..." class="input-void w-full text-base pb-2">
+            </div>
+
+            <button onclick="divine()" class="btn-spirit px-12 py-3 rounded-full text-sm tracking-[0.3em] uppercase mt-8">
+                感 应
+            </button>
+            
+            <div class="pt-12 flex justify-center space-x-6 text-[10px] text-gray-700">
+                <span onclick="toggleTool('xiaoliuren')" class="cursor-pointer hover:text-gray-400">小六壬</span>
+                <span class="opacity-30">|</span>
+                <span onclick="toggleTool('cases')" class="cursor-pointer hover:text-gray-400">古卦例</span>
+            </div>
+        </div>
+
+        <!-- 场景2：结果界面 -->
+        <div id="scene-result" class="hidden w-full fade-in-up flex flex-col items-center">
+            
+            <!-- 截图区域: 增加了ID用于定位内部元素 -->
+            <div id="capture-area" class="w-full max-w-5xl bg-[#050505] p-8 md:p-12 rounded-xl">
+                
+                <!-- 截图时显示的Logo -->
+                <div class="text-center mb-10 opacity-50">
+                     <span class="text-[#d4af37] text-sm tracking-[0.5em] border border-[#d4af37] px-2 py-1">梅花易数</span>
+                </div>
+
+                <!-- 增加ID visual-col 和 analysis-col 以便截图时控制 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-start transition-all duration-300">
+                    
+                    <!-- 左侧：卦象 (截图时保留) -->
+                    <div id="visual-col" class="flex flex-col items-center border-[#222] md:border-r md:pr-10 border-b md:border-b-0 pb-10 md:pb-0 w-full">
+                        <!-- 时间显示 -->
+                        <div class="text-center mb-10 space-y-1">
+                            <div class="text-gray-500 text-xs font-mono" id="res-gregorian"></div>
+                            <div class="text-[#8a7018] text-sm font-bold tracking-widest" id="res-lunar"></div>
+                        </div>
+
+                        <div class="flex items-end justify-center space-x-6 md:space-x-10">
+                            <!-- 主卦 -->
+                            <div class="gua-col">
+                                <span class="text-[10px] text-gray-600 mb-2 tracking-widest">主·开始</span>
+                                <div class="text-2xl text-[#d4af37] font-bold mb-4 font-serif" id="name-zhu"></div>
+                                <div id="viz-zhu"></div>
+                            </div>
+                            <!-- 互卦 -->
+                            <div class="gua-col">
+                                <span class="text-[10px] text-gray-600 mb-2 tracking-widest">互·过程</span>
+                                <div class="text-2xl text-[#d4af37] font-bold mb-4 font-serif" id="name-hu"></div>
+                                <div id="viz-hu"></div>
+                            </div>
+                            <!-- 变卦 -->
+                            <div class="gua-col">
+                                <span class="text-[10px] text-gray-600 mb-2 tracking-widest">变·结果</span>
+                                <div class="text-2xl text-[#d4af37] font-bold mb-4 font-serif" id="name-bian"></div>
+                                <div id="viz-bian"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-10 text-center px-4">
+                            <div class="text-gray-300 text-base font-serif italic" id="res-question"></div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：分析 (截图时移除) -->
+                    <div id="analysis-col" class="flex flex-col justify-center pt-4 md:pt-0 w-full">
+                        <h3 class="text-[#d4af37] text-lg font-light mb-6 flex items-center">
+                            <span class="w-8 h-[1px] bg-[#333] mr-4"></span>
+                            断 语
+                            <span class="w-8 h-[1px] bg-[#333] ml-4"></span>
+                        </h3>
+                        <div id="analysis-text" class="text-sm font-light leading-8 text-gray-300 space-y-4 text-justify"></div>
+                    </div>
+                </div>
+
+                <!-- 底部水印 -->
+                <div class="mt-12 text-center text-[10px] text-[#222] uppercase tracking-widest">
+                    QianYuan Yi Jing System
+                </div>
+            </div>
+
+            <!-- 操作按钮区 (不被截图) -->
+            <div class="mt-8 flex space-x-6">
+                <button onclick="resetApp()" class="btn-spirit px-6 py-2 text-xs rounded-full">再占一卦</button>
+                <button onclick="capture()" class="btn-spirit px-6 py-2 text-xs rounded-full flex items-center bg-[#d4af37] text-black border-[#d4af37] hover:bg-[#b5952f] hover:text-black">
+                    <span class="mr-2">❖</span> 保存卦象
+                </button>
+            </div>
+
+        </div>
+        
+        <!-- 弹窗：小六壬 -->
+        <div id="modal-xiaoliuren" class="fixed inset-0 bg-black/95 z-40 hidden flex items-center justify-center backdrop-blur-sm">
+            <div class="text-center w-full max-w-md p-8 relative border border-[#222] rounded-xl bg-[#0a0a0a]">
+                <button onclick="toggleTool('xiaoliuren')" class="absolute top-4 right-4 text-gray-600 hover:text-white">✕</button>
+                <h3 class="text-[#d4af37] mb-8 tracking-widest">小六壬速断</h3>
+                <div class="flex justify-center space-x-4 mb-8">
+                    <input type="number" id="xlr1" placeholder="数1" class="input-void w-16 text-lg">
+                    <input type="number" id="xlr2" placeholder="数2" class="input-void w-16 text-lg">
+                    <input type="number" id="xlr3" placeholder="数3" class="input-void w-16 text-lg">
+                </div>
+                <div class="flex justify-center space-x-4 mb-8">
+                    <button onclick="calcXLR()" class="btn-spirit px-6 py-2 text-xs rounded">推 演</button>
+                    <!-- 小六壬转梅花 -->
+                    <button onclick="xlrToDivination()" class="btn-spirit px-6 py-2 text-xs rounded border-dashed border-gray-600 hover:border-[#d4af37]">转排梅花 ➞</button>
+                </div>
+                <div id="xlr-res" class="grid grid-cols-3 gap-4 text-sm hidden bg-[#111] p-4 rounded">
+                     <div><div class="text-gray-600 text-[10px] mb-1">初·起因</div><div id="xr1" class="text-[#d4af37]"></div></div>
+                     <div><div class="text-gray-600 text-[10px] mb-1">中·过程</div><div id="xr2" class="text-[#d4af37]"></div></div>
+                     <div><div class="text-gray-600 text-[10px] mb-1">终·结果</div><div id="xr3" class="text-red-500 font-bold"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 弹窗：卦例 -->
+        <div id="modal-cases" class="fixed inset-0 bg-black/95 z-40 hidden flex items-center justify-center backdrop-blur-sm">
+            <div class="w-full max-w-lg p-8 relative border border-[#222] rounded-xl bg-[#0a0a0a]">
+                <button onclick="toggleTool('cases')" class="absolute top-4 right-4 text-gray-600 hover:text-white">✕</button>
+                <h3 class="text-[#d4af37] mb-8 text-center tracking-widest">古 籍 卦 例</h3>
+                <div class="space-y-3 mb-8">
+                    <div onclick="loadCase(0)" class="p-4 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">观梅占 (邵康节)</div>
+                    <div onclick="loadCase(1)" class="p-4 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">邻夜扣门借物占</div>
+                </div>
+                <div id="case-content" class="hidden text-sm font-light text-gray-300 leading-7 bg-[#111] p-6 rounded border-l-2 border-[#d4af37]">
+                    <p id="c-time" class="text-[#8a7018] text-xs mb-2"></p>
+                    <p id="c-qs" class="font-bold mb-4 text-white"></p>
+                    <p id="c-fk" class="opacity-80 italic"></p>
+                    <button onclick="caseToDivination()" class="mt-4 text-[10px] text-[#d4af37] underline">排盘查看</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- 核心数据 ---
+        const GUA = {
+            '111': { n: "乾", w: "金" }, '011': { n: "兑", w: "金" },
+            '101': { n: "离", w: "火" }, '001': { n: "震", w: "木" },
+            '110': { n: "巽", w: "木" }, '010': { n: "坎", w: "水" },
+            '100': { n: "艮", w: "土" }, '000': { n: "坤", w: "土" }
+        };
+        const XT_SEQ = ['111', '011', '101', '001', '110', '010', '100', '000']; 
+        const DZ = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+        const WX = ["金","水","木","火","土"];
+        
+        let appState = { mode: 'time' };
+        const caseDB = [
+            {t:"辰年 十二月十七日 申时", q:"观梅占", g:[30,39,39], f:"见二雀争枝坠地。预言：明晚当有女子折花，园丁不知而逐之，女子失惊坠地，逐伤其股。后果如验。"},
+            {t:"冬月 十七日 酉时", q:"扣门借物", g:[1,6,6], f:"闻扣门声，初一声，止，继而又五声。且云借物。断曰：借斧。果借斧。"}
+        ];
+
+        window.onload = () => {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            document.getElementById('inp-time').value = (new Date(now - offset)).toISOString().slice(0, 16);
+        };
+
+        function setMode(m) {
+            appState.mode = m;
+            ['time', 'number', 'random'].forEach(x => {
+                document.getElementById('btn-mode-' + x).classList.toggle('text-[#d4af37]', x === m);
+                document.getElementById('input-group-' + x).classList.toggle('hidden', x !== m);
+            });
+        }
+
+        function resetApp() {
+            document.getElementById('scene-result').classList.add('hidden');
+            document.getElementById('scene-input').classList.remove('fade-out', 'hidden');
+            document.getElementById('inp-question').value = '';
+            document.getElementById('n1').value = ''; document.getElementById('n2').value = ''; document.getElementById('n3').value = '';
+        }
+
+        function toggleTool(id) {
+            const el = document.getElementById('modal-' + id);
+            el.classList.toggle('hidden');
+        }
+
+        function calculate(a, b, c) {
+            if (a === 0) a = 8; if (b === 0) b = 8; if (c === 0) c = 6;
+            let idxA = (a % 8 === 0) ? 7 : (a % 8) - 1;
+            let idxB = (b % 8 === 0) ? 7 : (b % 8) - 1;
+            let mv = (c % 6 === 0) ? 6 : (c % 6);
+            let zT = XT_SEQ[idxA], zB = XT_SEQ[idxB];
+            let hT = zT[1] + zT[2] + zB[0], hB = zT[2] + zB[0] + zB[1];
+            let full = (zT + zB).split('');
+            let flipIdx = 6 - mv;
+            full[flipIdx] = full[flipIdx] === '1' ? '0' : '1';
+            return { z: [zT, zB], h: [hT, hB], b: [full.slice(0,3).join(''), full.slice(3,6).join('')], mv: mv };
+        }
+
+        function drawGua(id, top, bot, moveLine = -1) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
+            el.className = 'gua-grid';
+            const bits = top + bot;
+            for (let i = 0; i < 6; i++) {
+                const isYang = bits[i] === '1';
+                const row = document.createElement('div');
+                row.className = `gua-row ${isYang ? 'yang-line' : 'yin-line'}`;
+                if (isYang) {
+                    const b = document.createElement('div'); b.className = 'bar'; row.appendChild(b);
+                } else {
+                    const b1 = document.createElement('div'); b1.className = 'bar';
+                    const b2 = document.createElement('div'); b2.className = 'bar';
+                    row.appendChild(b1); row.appendChild(b2);
+                }
+                if (moveLine !== -1 && i === (6 - moveLine)) {
+                    const dot = document.createElement('div'); dot.className = 'moving-dot'; row.appendChild(dot);
+                }
+                el.appendChild(row);
+            }
+        }
+
+        function divine() {
+            let a, b, c, gregStr, lunarStr;
+            const qs = document.getElementById('inp-question').value || "无问自占";
+
+            if (appState.mode === 'random') {
+                a = Math.floor(Math.random()*64)+1; b = Math.floor(Math.random()*64)+1; c = Math.floor(Math.random()*6)+1;
+                gregStr = "随机起卦"; lunarStr = "灵机一动";
+            } else if (appState.mode === 'number') {
+                a = +document.getElementById('n1').value; b = +document.getElementById('n2').value; c = +document.getElementById('n3').value;
+                if (!a||!b||!c) return alert("请填写完整数字");
+                gregStr = "数字起卦"; lunarStr = `[${a}, ${b}, ${c}]`;
+            } else {
+                const d = new Date(document.getElementById('inp-time').value);
+                const l = Lunar.fromDate(d);
+                const yI = DZ.indexOf(l.getYearZhi()) + 1;
+                const m = l.getMonth(); const day = l.getDay();
+                let h = d.getHours();
+                let hI = (h >= 23 || h < 1) ? 1 : Math.floor((h+1)/2)+1;
+                a = yI + m + day; b = a + hI; c = b;
+                
+                gregStr = `公历: ${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+                lunarStr = `农历: ${l.getYearInGanZhi()}年 ${l.getMonthInChinese()}月${l.getDayInChinese()} ${DZ[hI-1]}时`;
+            }
+
+            const res = calculate(a, b, c);
+            
+            const inputScene = document.getElementById('scene-input');
+            inputScene.classList.add('fade-out');
+            setTimeout(() => {
+                inputScene.classList.add('hidden');
+                inputScene.classList.remove('fade-out');
+                document.getElementById('scene-result').classList.remove('hidden');
+            }, 700);
+
+            document.getElementById('res-gregorian').innerText = gregStr;
+            document.getElementById('res-lunar').innerText = lunarStr;
+            document.getElementById('res-question').innerText = `"${qs}"`;
+
+            document.getElementById('name-zhu').innerText = GUA[res.z[0]].n + GUA[res.z[1]].n;
+            drawGua('viz-zhu', res.z[0], res.z[1], res.mv);
+            document.getElementById('name-hu').innerText = GUA[res.h[0]].n + GUA[res.h[1]].n;
+            drawGua('viz-hu', res.h[0], res.h[1]);
+            document.getElementById('name-bian').innerText = GUA[res.b[0]].n + GUA[res.b[1]].n;
+            drawGua('viz-bian', res.b[0], res.b[1]);
+
+            analyzeLogic(res);
+        }
+
+        function analyzeLogic(res) {
+            const getRel = (t, y) => {
+                const ti = WX.indexOf(t), yi = WX.indexOf(y);
+                const n = (i, off) => WX[(i+off)%5];
+                if (n(ti,1)===y) return {s:2, t:"体生用·泄气"};
+                if (n(ti,2)===y) return {s:3, t:"体克用·进财"};
+                if (n(ti,3)===y) return {s:1, t:"用克体·受制"};
+                if (n(ti,4)===y) return {s:4, t:"用生体·得助"};
+                return {s:3, t:"比和·顺遂"};
+            };
+
+            let tiG, yongG;
+            if (res.mv <= 3) { tiG = res.z[0]; yongG = res.z[1]; } 
+            else { tiG = res.z[1]; yongG = res.z[0]; }
+
+            const tiW = GUA[tiG].w;
+            const zhuYongW = GUA[yongG].w;
+            
+            let huTiW, huYongW, bianTiW, bianYongW;
+            if (res.mv <= 3) { 
+                huTiW = GUA[res.h[0]].w; huYongW = GUA[res.h[1]].w;
+                bianTiW = GUA[res.b[0]].w; bianYongW = GUA[res.b[1]].w;
+            } else {
+                huTiW = GUA[res.h[1]].w; huYongW = GUA[res.h[0]].w;
+                bianTiW = GUA[res.b[1]].w; bianYongW = GUA[res.b[0]].w;
+            }
+
+            const r1 = getRel(tiW, zhuYongW);
+            const r2 = getRel(huTiW, huYongW);
+            const r3 = getRel(bianTiW, bianYongW);
+
+            let html = `
+                <div class="border-l-2 border-[#d4af37] pl-4 mb-6">
+                    <p>体卦 <span class="mark-gold font-bold text-lg">${tiW}</span> (代表自己)</p>
+                    <p class="text-xs text-gray-500 mt-1">体卦为主，用卦为事。</p>
+                </div>
+                <div class="grid grid-cols-1 gap-3 text-gray-400 mb-8">
+                    <div class="flex justify-between border-b border-[#222] pb-2"><span>【始】主卦</span><span>${r1.t}</span></div>
+                    <div class="flex justify-between border-b border-[#222] pb-2"><span>【历】互卦</span><span>${r2.t}</span></div>
+                    <div class="flex justify-between border-b border-[#222] pb-2"><span>【终】变卦</span><span>${r3.t}</span></div>
+                </div>
+                <div class="space-y-4 font-normal text-gray-300">
+            `;
+
+            if (r1.s > r3.s) html += `<p class="mark-bad">⚠️ 变比主凶，事多阻碍。</p>`;
+            else if (r1.s < r3.s) html += `<p class="mark-good">✅ 变比主吉，渐入佳境。</p>`;
+            else html += `<p class="mark-gold">⚖️ 吉凶无大变，平稳发展。</p>`;
+
+            const trend = (s1, s2) => s2 > s1 ? "上升" : (s2 < s1 ? "下滑" : "平稳");
+            html += `<p class="text-xs text-gray-500 leading-6">事情初始${r1.s<=2?'较为艰难':'较为顺利'}，过程中运势${trend(r1.s,r2.s)}，最终结局${r3.s>r2.s?'优于':'不如'}过程。</p>`;
+            if (Math.abs(r1.s - r3.s) > 2) html += `<p class="text-xs text-[#d4af37] mt-2">注：卦象变化剧烈。</p>`;
+            html += `</div>`;
+            document.getElementById('analysis-text').innerHTML = html;
+        }
+
+        // 小六壬逻辑
+        function calcXLR() {
+            let n1=+document.getElementById('xlr1').value, n2=+document.getElementById('xlr2').value, n3=+document.getElementById('xlr3').value;
+            if(!n1) return;
+            const map = ["大安·木","留连·土","速喜·火","赤口·金","小吉·水","空亡·土"];
+            let i1 = (n1-1)%6; if(i1<0)i1+=6;
+            let i2 = (i1+n2-1)%6; if(i2<0)i2+=6;
+            let i3 = (i2+n3-1)%6; if(i3<0)i3+=6;
+            document.getElementById('xlr-res').classList.remove('hidden');
+            document.getElementById('xr1').innerText=map[i1]; document.getElementById('xr2').innerText=map[i2]; document.getElementById('xr3').innerText=map[i3];
+        }
+
+        // 小六壬转梅花 (新功能)
+        function xlrToDivination() {
+            let n1 = document.getElementById('xlr1').value;
+            let n2 = document.getElementById('xlr2').value;
+            let n3 = document.getElementById('xlr3').value;
+            if(!n1 || !n2 || !n3) return alert("请先填写三个数字");
+            
+            // 切换模式并填充数据
+            setMode('number');
+            document.getElementById('n1').value = n1;
+            document.getElementById('n2').value = n2;
+            document.getElementById('n3').value = n3;
+            
+            toggleTool('xiaoliuren'); // 关闭弹窗
+            divine(); // 直接起卦
+        }
+
+        function loadCase(idx) {
+            const c = caseDB[idx];
+            document.getElementById('case-content').classList.remove('hidden');
+            document.getElementById('c-time').innerText = c.t; document.getElementById('c-qs').innerText = c.q; document.getElementById('c-fk').innerText = c.f;
+            document.getElementById('case-content').dataset.g = JSON.stringify(c.g);
+        }
+
+        function caseToDivination() {
+            const g = JSON.parse(document.getElementById('case-content').dataset.g);
+            setMode('number'); toggleTool('cases');
+            document.getElementById('n1').value = g[0]; document.getElementById('n2').value = g[1]; document.getElementById('n3').value = g[2];
+            document.getElementById('inp-question').value = document.getElementById('c-qs').innerText;
+            divine();
+        }
+
+        // 截图功能 (已修改：隐藏解析，纯卦象)
+        function capture() {
+            const target = document.getElementById('capture-area');
+            const originalBtnText = event.target.innerHTML;
+            event.target.innerText = "生成中...";
+            
+            html2canvas(target, {
+                backgroundColor: "#050505",
+                scale: 2, // 高清
+                useCORS: true,
+                onclone: (clonedDoc) => {
+                    // 1. 隐藏右侧分析栏
+                    const analysisCol = clonedDoc.getElementById('analysis-col');
+                    if (analysisCol) analysisCol.style.display = 'none';
+
+                    // 2. 调整左侧卦象栏样式，使其居中并去除边框
+                    const visualCol = clonedDoc.getElementById('visual-col');
+                    if (visualCol) {
+                        visualCol.style.borderRight = 'none'; // 去除右边框
+                        visualCol.style.paddingRight = '0';   // 去除右内边距
+                        visualCol.style.paddingBottom = '0';  // 稍微调整底部
+                    }
+
+                    // 3. 调整网格容器为单列布局 (flex-col or grid-cols-1)
+                    const gridContainer = visualCol.parentElement;
+                    if (gridContainer) {
+                        gridContainer.classList.remove('md:grid-cols-2');
+                        gridContainer.classList.add('flex', 'justify-center');
+                    }
+                }
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `乾元易卦_${new Date().getTime()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                event.target.innerHTML = originalBtnText; // 恢复按钮文字
+            });
+        }
+    </script>
+</body>
+</html>
