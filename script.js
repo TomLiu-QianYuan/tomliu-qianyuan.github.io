@@ -78,7 +78,7 @@ const versionConfig = {
                 title: { zh: "卜", en: "Divination" },
                 desc: { zh: "有趣的悟道之门", en: "Gate to Enlightenment" },
                 details: { zh: "梅花一朵，而照万物", en: "Reflecting the Universe" },
-                link: "https://qianyuan-yigua.streamlit.app"
+                link: "https://tomliu-qianyuan.github.io/meihua/index.html"
             }
         }
     },
@@ -528,4 +528,5 @@ function initVisualEffects() {
         });
     });
 }
+
 
