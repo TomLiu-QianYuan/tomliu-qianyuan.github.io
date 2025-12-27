@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Merry Christmas Ms. Carol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --bg-night: #0a1128;
+            --gold-accent: #d4af37;
+            --silver-accent: #e0e0e0;
+            --copper-accent: #cd7f32;
+            --text-primary: #f8f9fa;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1c2e4a 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, #1a1a1a 0%, var(--bg-deep) 40%);
+            color: var(--text-primary);
+            font-family: 'Cinzel', serif;
+            min-height: 100vh;
+            /* 顶部安全距离，防止遮挡 */
+            padding-top: max(80px, env(safe-area-inset-top)); 
+            padding-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
+        }
+
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bokeh {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            animation: floatDown linear infinite;
+        }
+
+        .blur-1 { filter: blur(1px); opacity: 0.8; }
+        .blur-2 { filter: blur(2px); opacity: 0.6; }
+        .blur-3 { filter: blur(4px); opacity: 0.4; }
+
+        @keyframes floatDown {
+            0% { transform: translateY(-10vh) translateX(-10px); }
+            100% { transform: translateY(110vh) translateX(10px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 480px;
+            text-align: center;
+            transition: max-width 1s cubic-bezier(0.22, 1, 0.36, 1);
+            margin: auto; 
+        }
+
+        .container.wide-mode {
+            max-width: 900px;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            padding: 40px 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+            width: 100%;
+        }
+
+        .active-screen {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hidden-screen {
+            display: none;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 400;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 0.5rem; /* 减小间距，给备注留位置 */
+            background: linear-gradient(to bottom, #fff 40%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        /* === 新增：个人备注样式 === */
+        .personal-note {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 使用系统默认字体以确保中文显示清晰 */
+            font-size: 0.95rem;
+            color: #d1d5db; /* 银灰色 */
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-weight: 300;
+            letter-spacing: 1px;
+            opacity: 0; /* 初始隐藏，随面板显示 */
+            animation: fadeIn 1s ease 0.5s forwards; /* 延迟淡入 */
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 0.8; transform: translateY(0); }
+        }
+
+        .coin-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .coin {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.3);
+        }
+
+        .coin:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        .silver {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #555;
+            border: 1px solid #7a8ba3;
+        }
+        
+        .gold {
+            background: linear-gradient(135deg, #eaddaa 0%, #bf953f 100%);
+            color: #584113;
+            border: 1px solid #8a6e2f;
+        }
+
+        .copper {
+            background: linear-gradient(135deg, #dba882 0%, #8c5a3c 100%);
+            color: #3e1e11;
+            border: 1px solid #5c3a2a;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 0 10px rgba(62, 30, 17, 0.5);
+        }
+        
+        .feedback-text {
+            height: 20px;
+            font-size: 0.8rem;
+            color: #ff6b6b;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-transform: uppercase;
+        }
+
+        .media-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .video-wrapper {
+            width: 100%;
+            aspect-ratio: 16 / 9; 
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #000;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #audio-wrapper {
+            aspect-ratio: auto;
+            padding: 40px 20px;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .switch-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            padding: 8px 16px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .switch-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background: var(--gold-accent);
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+
+        .switch-btn.active {
+            color: var(--text-primary);
+        }
+
+        .switch-btn.active::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .d-none { display: none; }
+        
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        @media (max-width: 600px) {
+            .glass-panel { padding: 30px 20px; }
+            .coin { width: 50px; height: 50px; font-size: 1.2rem; }
+            h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+
+    <div id="main-container" class="container">
+        
+        <div id="lock-screen" class="glass-panel active-screen">
+            <h2>Authentication</h2>
+            <h1>Access Key</h1>
+            <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 30px;">
+                Select the copper pound to unlock.
+            </p>
+
+            <div class="coin-grid" id="coin-box">
+                <div class="coin silver" onclick="rejectAccess()">$</div>
+                <div class="coin gold" onclick="rejectAccess()">€</div>
+                <div class="coin copper" onclick="grantAccess()">£</div>
+                <div class="coin silver" onclick="rejectAccess()">¥</div>
+                <div class="coin gold" onclick="rejectAccess()">₣</div>
+            </div>
+
+            <div id="error-msg" class="feedback-text">Access Denied</div>
+        </div>
+
+        <div id="content-screen" class="glass-panel hidden-screen">
+            <h2>For Carol</h2>
+            <h1>Merry Christmas</h1>
+            
+            <div class="personal-note">
+                自学练习了很久，见笑啦<br>
+                <span style="font-size: 0.9em; opacity: 0.8;">( 配合礼物更佳哦 )</span>
+            </div>
+            
+            <div class="controls">
+                <button class="switch-btn active" onclick="toggleMedia('video', this)">Video</button>
+                <button class="switch-btn" onclick="toggleMedia('audio', this)">Audio</button>
+            </div>
+
+            <div class="media-container">
+                <div id="video-wrapper" class="video-wrapper">
+                    <video id="giftVideo" controls controlsList="nodownload" playsinline>
+                        <source src="piano.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <div id="audio-wrapper" class="video-wrapper d-none" style="border: none; background: transparent; aspect-ratio: auto;">
+                    <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.8;">🎹</div>
+                    <audio id="giftAudio" controls>
+                        <source src="piano.m4a" type="audio/mp4">
+                    </audio>
+                    <p style="margin-top:20px; font-size: 0.8rem; opacity: 0.6;">Merry Christmas Mr. Lawrence</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 40; 
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.classList.add('bokeh');
+                const blurLevel = Math.ceil(Math.random() * 3);
+                p.classList.add(`blur-${blurLevel}`);
+                const size = Math.random() * 8 + 4; 
+                p.style.width = `${size}px`;
+                p.style.height = `${size}px`;
+                p.style.left = `${Math.random() * 100}vw`;
+                const duration = Math.random() * 10 + 10; 
+                p.style.animationDuration = `${duration}s`;
+                p.style.animationDelay = `-${Math.random() * 10}s`;
+                container.appendChild(p);
+            }
+        }
+
+        function rejectAccess() {
+            const box = document.getElementById('coin-box');
+            const msg = document.getElementById('error-msg');
+            box.classList.remove('shake');
+            void box.offsetWidth; 
+            box.classList.add('shake');
+            msg.style.opacity = '1';
+            msg.innerText = "ACCESS DENIED";
+            setTimeout(() => { msg.style.opacity = '0'; }, 1500);
+        }
+
+        function grantAccess() {
+            const lockScreen = document.getElementById('lock-screen');
+            const contentScreen = document.getElementById('content-screen');
+            const msg = document.getElementById('error-msg');
+            const mainContainer = document.getElementById('main-container');
+
+            msg.style.color = '#d4af37';
+            msg.innerText = "ACCESS GRANTED";
+            msg.style.opacity = '1';
+
+            lockScreen.style.opacity = '0';
+            lockScreen.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                lockScreen.style.display = 'none';
+                mainContainer.classList.add('wide-mode'); 
+                contentScreen.classList.remove('hidden-screen');
+                void contentScreen.offsetWidth; 
+                contentScreen.classList.add('active-screen');
+            }, 800);
+        }
+
+        function toggleMedia(type, btn) {
+            const vWrap = document.getElementById('video-wrapper');
+            const aWrap = document.getElementById('audio-wrapper');
+            const vEl = document.getElementById('giftVideo');
+            const aEl = document.getElementById('giftAudio');
+            
+            vEl.pause();
+            aEl.pause();
+
+            document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (type === 'video') {
+                vWrap.classList.remove('d-none');
+                aWrap.classList.add('d-none');
+            } else {
+                vWrap.classList.add('d-none');
+                aWrap.classList.remove('d-none');
+            }
+        }
+
+        initParticles();
+    </script>
+</body>
+</html>
