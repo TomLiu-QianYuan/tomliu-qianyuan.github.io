@@ -484,7 +484,7 @@
             const getRel = (t, y) => {
                 const ti = WX.indexOf(t), yi = WX.indexOf(y);
                 const n = (i, off) => WX[(i+off)%5];
-                if (n(ti,1)===y) return {s:2, t:"体生用·泄气"}; if (n(ti,2)===y) return {s:3, t:"体克用·进财"}; if (n(ti,3)===y) return {s:1, t:"用克体·受制"}; if (n(ti,4)===y) return {s:4, t:"用生体·得助"}; return {s:3, t:"比和·顺遂"};
+                if (n(ti,1)===y) return {s:2, t:"体生用"}; if (n(ti,2)===y) return {s:3, t:"体克用"}; if (n(ti,3)===y) return {s:1, t:"用克体"}; if (n(ti,4)===y) return {s:4, t:"用生体"}; return {s:3, t:"比和"};
             };
             let tiG, yongG;
             if (res.mv <= 3) { tiG = res.z[0]; yongG = res.z[1]; } else { tiG = res.z[1]; yongG = res.z[0]; }
