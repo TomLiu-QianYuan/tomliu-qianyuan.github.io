@@ -4,6 +4,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="icon" href="data:,">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>乾元 · 易</title>
@@ -1463,10 +1464,8 @@
                 <span onclick="toggleTool(&#39;xiaoliuren&#39;)"
                     class="cursor-pointer hover:text-gray-400 p-2">小六壬</span>
                 <span class="opacity-30 hidden md:inline">|</span>
-                <span onclick="toggleTool(&#39;cases&#39;)" class="cursor-pointer hover:text-gray-400 p-2">古卦例</span>
-                <span class="opacity-30 hidden md:inline">|</span>
-                <span onclick="toggleTool(&#39;history&#39;)" class="cursor-pointer hover:text-gray-400 p-2">📜
-                    记录</span>
+                <span onclick="toggleTool('history')" class="cursor-pointer hover:text-gray-400 p-2">📚
+                    案例与记录</span>
                 <span class="opacity-30 hidden md:inline">|</span>
                 <button onclick="toggleColorMode()" id="btn-color-mode"
                     class="cursor-pointer hover:text-[#d4af37] transition-colors flex items-center p-2">
@@ -1475,12 +1474,8 @@
                 <span class="opacity-30 hidden md:inline">|</span>
                 <span onclick="toggleTool(&#39;contrib&#39;)" class="cursor-pointer hover:text-gray-400 p-2">🤝
                     贡献</span>
-            </div>
-            <!-- JWT Token 输入框移动到了这里，脱离 Flex 的束缚 -->
-            <div class="mt-4 text-center">
-                <input type="password" id="inp-jwt" placeholder="神钥 / 体验卡" class="input-void"
-                    style="width: 100px; font-size: 12px; color: #d1d5db; opacity: 0.8; border-bottom: 2px dashed #d4af37; outline: none; padding-bottom: 4px; transition: opacity 0.3s;"
-                    onfocus="this.style.opacity=1" onblur="if(!this.value) this.style.opacity=0.8;">
+                <span class="opacity-30 hidden md:inline">|</span>
+                <span onclick="promptKey()" class="cursor-pointer hover:text-[#d4af37] p-2 text-[#d4af37]">🔑 设 置 神 钥</span>
             </div>
         </div>
 
@@ -1549,7 +1544,7 @@
                         <h3
                             class="text-[#d4af37] text-lg font-light mb-6 flex items-center justify-center md:justify-start">
                             <span class="w-8 h-[1px] bg-[#333] mr-4 md:hidden"></span>
-                            断 语
+                            断 语<span id="analysis-title-ext" class="ml-2 text-sm opacity-80 tracking-widest text-[#f39c12]"></span>
                             <span class="w-8 h-[1px] bg-[#333] ml-4 md:hidden"></span>
                         </h3>
                         <div id="analysis-text"
@@ -1558,14 +1553,8 @@
 
                         <!-- AI 测算生成结果容器 -->
                         <div id="ai-result-box"
-                            class="hidden mt-6 pt-6 border-t border-dashed border-[#333] px-2 md:px-0">
-                            <h3 class="text-[#d4af37] text-sm font-light mb-4 flex items-center">
-                                <span class="tracking-widest">天机神算</span>
-                                <div class="loader ml-3 !mt-0" id="ai-loader"
-                                    style="display:none; transform: scale(0.6); transform-origin: left;">
-                                    <span></span><span></span><span></span>
-                                </div>
-                            </h3>
+                            class="hidden mt-0 px-2 md:px-0">
+
                             <div id="ai-result-content"
                                 class="text-sm font-light leading-7 md:leading-8 text-gray-300 space-y-4 text-justify">
                             </div>
@@ -1659,40 +1648,38 @@
             </div>
         </div>
 
-        <div id="modal-cases"
-            class="fixed inset-0 bg-black/95 z-40 hidden flex items-center justify-center backdrop-blur-sm px-4">
-            <div class="modal-content relative">
-                <button onclick="toggleTool(&#39;cases&#39;)"
-                    class="absolute top-4 right-4 text-gray-600 hover:text-white p-2">✕</button>
-                <h3 class="text-[#d4af37] mb-8 text-center tracking-widest">古 籍 卦 例</h3>
-                <div class="space-y-3 mb-8">
-                    <div onclick="loadCase(0)"
-                        class="p-4 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">
-                        观梅占 (邵康节)</div>
-                    <div onclick="loadCase(1)"
-                        class="p-4 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">
-                        邻夜扣门借物占</div>
-                </div>
-                <div id="case-content"
-                    class="hidden text-sm font-light text-gray-300 leading-7 bg-[#111] p-6 rounded border-l-2 border-[#d4af37]">
-                    <p id="c-time" class="text-[#8a7018] text-xs mb-2"></p>
-                    <p id="c-qs" class="font-bold mb-4 text-white"></p>
-                    <p id="c-fk" class="opacity-80 italic"></p>
-                    <button onclick="caseToDivination()"
-                        class="mt-4 text-[10px] text-[#d4af37] underline block w-full text-right">排盘查看</button>
-                </div>
-            </div>
-        </div>
-
         <div id="modal-history"
             class="fixed inset-0 bg-black/95 z-40 hidden flex items-center justify-center backdrop-blur-sm px-4">
-            <div class="modal-content relative max-h-[70vh] flex flex-col">
-                <button onclick="toggleTool(&#39;history&#39;)"
+            <div class="modal-content relative max-h-[80vh] flex flex-col w-full max-w-md">
+                <button onclick="toggleTool('history')"
                     class="absolute top-4 right-4 text-gray-600 hover:text-white p-2">✕</button>
-                <h3 class="text-[#d4af37] mb-6 text-center tracking-widest">本 地 记 录</h3>
-                <div class="flex-1 overflow-y-auto pr-2 space-y-2" id="history-list"></div>
-                <div class="mt-4 text-center pt-2 border-t border-[#222]">
-                    <button onclick="clearHistory()" class="text-[10px] text-red-500 hover:underline p-2">清空所有</button>
+                <h3 class="text-[#d4af37] mb-6 text-center tracking-widest">案 例 与 记 录</h3>
+                
+                <div class="flex-1 overflow-y-auto pr-2">
+                    <!-- 古卦例 -->
+                    <div class="mb-8">
+                        <div class="text-[10px] text-[#d4af37] opacity-60 mb-3 tracking-widest">❖ 经典古例</div>
+                        <div class="space-y-2">
+                            <div onclick="loadCase(0)" class="p-3 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">观梅占 (邵康节)</div>
+                            <div onclick="loadCase(1)" class="p-3 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">邻夜扣门借物占</div>
+                        </div>
+                        <div id="case-content" class="hidden mt-3 text-sm font-light text-gray-300 leading-7 bg-[#111] p-4 rounded border-l-2 border-[#d4af37]">
+                            <p id="c-time" class="text-[#8a7018] text-xs mb-1"></p>
+                            <p id="c-qs" class="font-bold mb-3 text-white"></p>
+                            <p id="c-fk" class="opacity-80 italic mb-2"></p>
+                            <button onclick="caseToDivination()" class="text-[10px] text-[#d4af37] underline block w-full text-right">以此案例排盘体验</button>
+                        </div>
+                    </div>
+
+                    <!-- 本地记录 -->
+                    <div>
+                        <div class="text-[10px] text-[#d4af37] opacity-60 mb-3 tracking-widest">❖ 本地测算日志</div>
+                        <div class="space-y-2" id="history-list"></div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center pt-4 border-t border-[#222]">
+                    <button onclick="clearHistory()" class="text-[10px] text-red-500 hover:text-red-400 p-2 border border-red-900 bg-red-950/20 rounded transition-colors px-4">清空本地记录</button>
                 </div>
             </div>
         </div>
@@ -1984,7 +1971,7 @@
         }
         function caseToDivination() {
             const g = JSON.parse(document.getElementById('case-content').dataset.g);
-            setMode('number'); toggleTool('cases');
+            setMode('number'); toggleTool('history');
             document.getElementById('n1').value = g[0]; document.getElementById('n2').value = g[1]; document.getElementById('n3').value = g[2];
             document.getElementById('inp-question').value = document.getElementById('c-qs').innerText;
             // 案例不自动存，但可手动存
@@ -2000,24 +1987,47 @@
             document.getElementById('ai-result-box').classList.add('hidden');
             document.getElementById('ai-result-content').innerHTML = '';
             
-            // 恢复默认的静态断语显示
+            // 恢复默认的静态断语显示并清空扩展标题
             document.getElementById('analysis-text').classList.remove('hidden');
+            document.getElementById('analysis-title-ext').innerText = '';
         }
         function toggleColorMode() { appState.colorMode = (appState.colorMode === 'gold') ? 'wuxing' : 'gold'; localStorage.setItem('qy_color_mode', appState.colorMode); updateColorBtnText(); }
         function updateColorBtnText() { document.getElementById('color-mode-text').innerText = (appState.colorMode === 'gold') ? '默认' : '五行'; }
 
+        function promptKey() {
+            const current = localStorage.getItem('qy_jwt_card') || '';
+            const given = prompt('【系统权限】\n请输入您的「神机钥」或「体验卡」：', current);
+            if (given !== null) {
+                localStorage.setItem('qy_jwt_card', given.trim());
+                alert(given.trim() ? '神钥已成功收入罗盘。' : '神钥已清空。');
+            }
+        }
+
         // --- AI 集成流处理逻辑 ---
         window.renderYAML = function (rawText, isPremium) {
             let html = '';
+            
+            // 是否已经出现了 yaml 头
+            const isYamlFormat = rawText.includes('analysis:') || rawText.includes('conclusion:');
+
             const analysisMatch = rawText.match(/analysis:\s*\|([\s\S]*?)(?:\nconclusion:\s*\||$)/);
             const conclusionMatch = rawText.match(/conclusion:\s*\|([\s\S]*)$/);
+            
             if (analysisMatch && isPremium) {
                 html += `<div class="mb-4"><div class="text-[#f39c12] text-xs font-bold mb-2 tracking-widest">❖ 深度解析</div><div class="bg-[#111] p-4 rounded text-[#d1d5db]">${analysisMatch[1].trimStart().replace(/\n/g, '<br>')}</div></div>`;
             }
             if (conclusionMatch) {
                 html += `<div><div class="text-[#2ecc71] text-xs font-bold mb-2 tracking-widest">❖ 断言与建议</div><div class="bg-[#111] p-4 rounded border-l-2 border-[#2ecc71] text-white">${conclusionMatch[1].trimStart().replace(/\n/g, '<br>')}</div></div>`;
             }
-            return html || rawText.replace(/\n/g, '<br>');
+            
+            if (isYamlFormat) {
+                if (!isPremium && !conclusionMatch) {
+                    return '<div class="text-gray-500 italic text-xs animate-pulse opacity-60">老道正在窥算天机深处...<br>（因神钥权限，深度推盘暂不可见，拼命凝练结论中 ✨）</div>';
+                }
+                return html;
+            }
+            
+            return rawText.replace(/\n/g, '<br>');
         };
 
         async function invokeAI() {
@@ -2040,29 +2050,27 @@
 6. **用户反馈/笔记**：${document.getElementById('res-feedback').value}
 
 请结合五行旺衰、体用生克、卦象含义，给我一篇详细的断语。`;
-            const card = document.getElementById('inp-jwt').value.trim();
+            const card = localStorage.getItem('qy_jwt_card');
             if (!card) {
-                alert('天机不可轻泄。请先在首页底部输入神钥 / 体验卡。');
+                alert('天机不可轻泄。请先在首页底部点击【🔑 设置神钥】输入您的体验卡。');
                 resetApp();
+                promptKey();
                 return;
             }
 
-            localStorage.setItem('qy_jwt_card', card);
-
-            // 隐藏传统的静态固定断语
-            document.getElementById('analysis-text').classList.add('hidden');
-
             const aiBox = document.getElementById('ai-result-box');
-            const aiLoader = document.getElementById('ai-loader');
             const aiContent = document.getElementById('ai-result-content');
             const btnAI = document.getElementById('btn-ask-ai');
+
+            // 隐藏传统的静态固定断语并修改标题
+            document.getElementById('analysis-text').classList.add('hidden');
+            document.getElementById('analysis-title-ext').innerText = "(AI 测算)";
 
             btnAI.style.pointerEvents = 'none';
             btnAI.style.opacity = '0.5';
             aiBox.classList.remove('hidden');
             
-            // 加载动画：隐藏原来的小 loader，直接在大区域展示居中大加载动效
-            aiLoader.style.display = 'none';
+            // 直接在大区域展示居中大加载动效
             aiContent.innerHTML = `<div class="flex flex-col items-center justify-center py-10 space-y-4 opacity-70">
                                      <div class="loader" style="transform: scale(1.5);"><span></span><span></span><span></span></div>
                                      <div class="text-[#d4af37] text-sm tracking-widest mt-4 animate-pulse">正在测算中...</div>
