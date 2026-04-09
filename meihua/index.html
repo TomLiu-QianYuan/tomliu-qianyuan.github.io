@@ -7,9 +7,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>乾元 · 易</title>
-    <script src="./乾元 · 易_files/saved_resource"></script>
-    <script src="./乾元 · 易_files/lunar.js.下载"></script>
-    <script src="./乾元 · 易_files/html2canvas.min.js.下载"></script>
+    <!-- 使用公共 CDN 替换依赖本地附属文件夹的脚本库，实现真正的单文件运行 -->
+    <script src="https://unpkg.com/lunar-javascript/lunar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&display=swap" rel="stylesheet" crossorigin="anonymous">
 
     <style>
@@ -1575,6 +1575,10 @@
                                 class="text-[10px] border border-[#333] hover:border-[#d4af37] text-gray-500 hover:text-[#d4af37] px-4 py-2 rounded transition-colors flex items-center justify-center md:justify-start mx-auto md:mx-0 gap-2 w-full md:w-auto">
                                 <span>✨</span> 复制给 AI 深度解卦
                             </button>
+                            <button id="btn-ask-ai" onclick="invokeAI()"
+                                class="text-[10px] border border-[#333] hover:border-[#d4af37] text-[#d4af37] hover:text-[#b5952f] px-4 py-2 rounded transition-colors flex items-center justify-center md:justify-start mx-auto md:mx-0 gap-2 w-full md:w-auto font-bold tracking-widest">
+                                <span>✧</span> ＡＩ 简 算
+                            </button>
                             <button onclick="updateCurrentRecord()" id="btn-update-record"
                                 class="text-[10px] border border-[#333] hover:border-[#d4af37] text-gray-500 hover:text-[#d4af37] px-4 py-2 rounded transition-colors flex items-center justify-center md:justify-start mx-auto md:mx-0 gap-2 w-full md:w-auto">
                                 <span>💾</span> 更新记录 (保存修改)
@@ -1596,11 +1600,7 @@
                 </button>
             </div>
 
-            <!-- 右下角极度隐蔽的 AI 召唤按钮 -->
-            <button id="btn-ask-ai" onclick="invokeAI()"
-                style="position: fixed; bottom: 30px; right: 30px; color: #d4af37; opacity: 0.9; font-size: 2rem; font-weight: bold; z-index: 9999; background: #222; border: 1px solid #d4af37; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(212,175,55,0.5); outline: none; cursor: pointer; transition: all 0.3s;"
-                onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
-                title="唤醒AI神算">✧</button>
+
         </div>
 
         <!-- 工具弹窗 -->
