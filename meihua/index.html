@@ -1711,8 +1711,6 @@
             const offset = now.getTimezoneOffset() * 60000;
             document.getElementById('inp-time').value = (new Date(now - offset)).toISOString().slice(0, 16);
             updateColorBtnText();
-            const savedKey = localStorage.getItem('qy_jwt_card');
-            if (savedKey) document.getElementById('inp-jwt').value = savedKey;
         };
 
         function calculate(a, b, c) {
