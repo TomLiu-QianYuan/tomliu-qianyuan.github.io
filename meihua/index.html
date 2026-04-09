@@ -60,6 +60,18 @@
             background: transparent;
         }
 
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
         .input-void {
             background: transparent;
             border: none;
@@ -1674,7 +1686,7 @@
                     <!-- 本地记录 -->
                     <div>
                         <div class="text-[10px] text-[#d4af37] opacity-60 mb-3 tracking-widest">❖ 本地测算日志</div>
-                        <div class="space-y-2" id="history-list"></div>
+                        <div class="space-y-2 max-h-[35vh] py-2 overflow-y-auto pr-2 custom-scrollbar border-y border-[#1a1a1a]" id="history-list"></div>
                     </div>
                 </div>
 
