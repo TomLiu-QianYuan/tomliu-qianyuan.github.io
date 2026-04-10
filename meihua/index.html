@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- saved from url=(0051)https://tomliu-qianyuan.github.io/meihua/index.html -->
 <html lang="zh-CN">
 
 <head>
@@ -8,10 +7,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>乾元 · 易</title>
-    <!-- 使用公共 CDN 替换依赖本地附属文件夹的脚本库，实现真正的单文件运行 -->
     <script src="https://unpkg.com/lunar-javascript/lunar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&display=swap" rel="stylesheet"
+        crossorigin="anonymous">
 
     <style>
         :root {
@@ -64,10 +63,12 @@
             width: 4px;
             background: transparent;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #333;
             border-radius: 4px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #d4af37;
         }
@@ -256,6 +257,43 @@
             border: 1px solid #222;
             border-radius: 0.75rem;
             padding: 1.5rem;
+        }
+
+        /* AI 加载动画 */
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .loader span {
+            width: 8px;
+            height: 8px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loader span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loader span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
         }
     </style>
     <style>
@@ -1430,7 +1468,6 @@
 
     <main class="w-full max-w-6xl relative flex items-center justify-center min-h-[600px]">
 
-        <!-- 输入界面 -->
         <div id="scene-input" class="w-full max-w-lg text-center transition-all duration-700 space-y-10 md:space-y-12">
             <div class="space-y-2 opacity-60 mt-12 md:mt-0">
                 <p class="text-xs tracking-[0.2em] font-light">一物从来有一身</p>
@@ -1487,11 +1524,11 @@
                 <span onclick="toggleTool(&#39;contrib&#39;)" class="cursor-pointer hover:text-gray-400 p-2">🤝
                     贡献</span>
                 <span class="opacity-30 hidden md:inline">|</span>
-                <span onclick="promptKey()" class="cursor-pointer hover:text-[#d4af37] p-2 text-[#d4af37]">🔑 设 置 神 钥</span>
+                <span onclick="promptKey()" class="cursor-pointer hover:text-[#d4af37] p-2 text-[#d4af37]">🔑 设 置 神
+                    钥</span>
             </div>
         </div>
 
-        <!-- 结果界面 -->
         <div id="scene-result" class="hidden w-full fade-in-up flex flex-col items-center">
 
             <div id="capture-area" class="w-full max-w-5xl bg-[#050505] p-6 md:p-12 rounded-xl">
@@ -1501,19 +1538,15 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-start transition-all duration-300">
 
-                    <!-- 左侧：卦象 -->
                     <div id="visual-col"
                         class="flex flex-col items-center border-[#222] md:border-r md:pr-10 border-b md:border-b-0 pb-10 md:pb-0 w-full">
-                        <!-- 时间与核心数字显示 -->
                         <div class="text-center mb-8 md:mb-10 space-y-1">
                             <div class="text-gray-500 text-xs font-mono" id="res-gregorian"></div>
                             <div class="text-[#8a7018] text-sm font-bold tracking-widest" id="res-lunar"></div>
-                            <!-- 新增：核心数字显示 -->
                             <div class="text-gray-600 text-[10px] font-mono mt-1 tracking-widest" id="res-nums"></div>
                         </div>
 
                         <div class="flex items-end justify-center space-x-2 md:space-x-8">
-                            <!-- 主卦 -->
                             <div class="gua-col">
                                 <span class="text-[10px] text-gray-600 mb-1 tracking-widest">主·开始</span>
                                 <div class="text-lg md:text-xl text-[#d4af37] font-bold font-serif" id="fullname-zhu">
@@ -1521,7 +1554,6 @@
                                 <div class="text-xs text-gray-600 mb-3" id="name-zhu"></div>
                                 <div id="viz-zhu"></div>
                             </div>
-                            <!-- 互卦 -->
                             <div class="gua-col">
                                 <span class="text-[10px] text-gray-600 mb-1 tracking-widest">互·过程</span>
                                 <div class="text-lg md:text-xl text-[#d4af37] font-bold font-serif" id="fullname-hu">
@@ -1529,7 +1561,6 @@
                                 <div class="text-xs text-gray-600 mb-3" id="name-hu"></div>
                                 <div id="viz-hu"></div>
                             </div>
-                            <!-- 变卦 -->
                             <div class="gua-col">
                                 <span class="text-[10px] text-gray-600 mb-1 tracking-widest">变·结果</span>
                                 <div class="text-lg md:text-xl text-[#d4af37] font-bold font-serif" id="fullname-bian">
@@ -1551,21 +1582,19 @@
                         </div>
                     </div>
 
-                    <!-- 右侧：分析 -->
                     <div id="analysis-col" class="flex flex-col justify-center pt-2 md:pt-0 w-full">
                         <h3
                             class="text-[#d4af37] text-lg font-light mb-6 flex items-center justify-center md:justify-start">
                             <span class="w-8 h-[1px] bg-[#333] mr-4 md:hidden"></span>
-                            断 语<span id="analysis-title-ext" class="ml-2 text-sm opacity-80 tracking-widest text-[#f39c12]"></span>
+                            断 语<span id="analysis-title-ext"
+                                class="ml-2 text-sm opacity-80 tracking-widest text-[#f39c12]"></span>
                             <span class="w-8 h-[1px] bg-[#333] ml-4 md:hidden"></span>
                         </h3>
                         <div id="analysis-text"
                             class="text-sm font-light leading-7 md:leading-8 text-gray-300 space-y-4 text-justify px-2 md:px-0">
                         </div>
 
-                        <!-- AI 测算生成结果容器 -->
-                        <div id="ai-result-box"
-                            class="hidden mt-0 px-2 md:px-0">
+                        <div id="ai-result-box" class="hidden mt-0 px-2 md:px-0">
 
                             <div id="ai-result-content"
                                 class="text-sm font-light leading-7 md:leading-8 text-gray-300 space-y-4 text-justify">
@@ -1595,7 +1624,7 @@
 
             <div class="mt-8 flex space-x-6 pb-8">
                 <button onclick="resetApp()" class="btn-spirit px-6 py-2 text-xs rounded-full">再占一卦</button>
-                <button onclick="capture()"
+                <button onclick="capture(event)"
                     class="btn-spirit px-6 py-2 text-xs rounded-full flex items-center bg-[#d4af37] text-black border-[#d4af37] hover:bg-[#b5952f] hover:text-black">
                     <span class="mr-2">❖</span> 保存卦象 (截图)
                 </button>
@@ -1604,7 +1633,6 @@
 
         </div>
 
-        <!-- 工具弹窗 -->
         <div id="modal-xiaoliuren"
             class="fixed inset-0 bg-black/95 z-40 hidden flex items-center justify-center backdrop-blur-sm px-4">
             <div class="modal-content relative">
@@ -1666,32 +1694,38 @@
                 <button onclick="toggleTool('history')"
                     class="absolute top-4 right-4 text-gray-600 hover:text-white p-2">✕</button>
                 <h3 class="text-[#d4af37] mb-6 text-center tracking-widest">案 例 与 记 录</h3>
-                
+
                 <div class="flex-1 overflow-y-auto pr-2">
-                    <!-- 古卦例 -->
                     <div class="mb-8">
                         <div class="text-[10px] text-[#d4af37] opacity-60 mb-3 tracking-widest">❖ 经典古例</div>
                         <div class="space-y-2">
-                            <div onclick="loadCase(0)" class="p-3 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">观梅占 (邵康节)</div>
-                            <div onclick="loadCase(1)" class="p-3 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">邻夜扣门借物占</div>
+                            <div onclick="loadCase(0)"
+                                class="p-3 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">
+                                观梅占 (邵康节)</div>
+                            <div onclick="loadCase(1)"
+                                class="p-3 border border-[#222] hover:border-[#d4af37] cursor-pointer text-sm text-gray-400 hover:text-white transition-colors rounded">
+                                邻夜扣门借物占</div>
                         </div>
-                        <div id="case-content" class="hidden mt-3 text-sm font-light text-gray-300 leading-7 bg-[#111] p-4 rounded border-l-2 border-[#d4af37]">
+                        <div id="case-content"
+                            class="hidden mt-3 text-sm font-light text-gray-300 leading-7 bg-[#111] p-4 rounded border-l-2 border-[#d4af37]">
                             <p id="c-time" class="text-[#8a7018] text-xs mb-1"></p>
                             <p id="c-qs" class="font-bold mb-3 text-white"></p>
                             <p id="c-fk" class="opacity-80 italic mb-2"></p>
-                            <button onclick="caseToDivination()" class="text-[10px] text-[#d4af37] underline block w-full text-right">以此案例排盘体验</button>
+                            <button onclick="caseToDivination()"
+                                class="text-[10px] text-[#d4af37] underline block w-full text-right">以此案例排盘体验</button>
                         </div>
                     </div>
 
-                    <!-- 本地记录 -->
                     <div>
                         <div class="text-[10px] text-[#d4af37] opacity-60 mb-3 tracking-widest">❖ 本地测算日志</div>
-                        <div class="space-y-2 max-h-[35vh] py-2 overflow-y-auto pr-2 custom-scrollbar border-y border-[#1a1a1a]" id="history-list"></div>
+                        <div class="space-y-2 max-h-[35vh] py-2 overflow-y-auto pr-2 custom-scrollbar border-y border-[#1a1a1a]"
+                            id="history-list"></div>
                     </div>
                 </div>
 
                 <div class="mt-4 text-center pt-4 border-t border-[#222]">
-                    <button onclick="clearHistory()" class="text-[10px] text-red-500 hover:text-red-400 p-2 border border-red-900 bg-red-950/20 rounded transition-colors px-4">清空本地记录</button>
+                    <button onclick="clearHistory()"
+                        class="text-[10px] text-red-500 hover:text-red-400 p-2 border border-red-900 bg-red-950/20 rounded transition-colors px-4">清空本地记录</button>
                 </div>
             </div>
         </div>
@@ -1828,6 +1862,32 @@
             drawGua('viz-bian', res.b[0], res.b[1]);
 
             analyzeLogic(res, monthIdx);
+
+            // === 新增：检查历史记录中是否已有 AI 测算结果 ===
+            let hist = JSON.parse(localStorage.getItem('qy_history') || '[]');
+            const record = hist.find(h => h.t === appState.currentRecordId);
+
+            if (record && record.ai) {
+                // 如果有缓存的 AI 结果，默认隐藏传统断语，展示 AI 结果
+                document.getElementById('analysis-text').classList.add('hidden');
+                document.getElementById('analysis-title-ext').innerText = "(AI 测算)";
+
+                const aiBox = document.getElementById('ai-result-box');
+                const aiContent = document.getElementById('ai-result-content');
+                aiBox.classList.remove('hidden');
+
+                let isPremium = false;
+                const card = localStorage.getItem('qy_jwt_card');
+                try { if (card) isPremium = (JSON.parse(atob(card.split('.')[1])).type === 'premium'); } catch (e) { }
+
+                // 渲染缓存的内容
+                aiContent.innerHTML = window.renderYAML(record.ai, isPremium);
+            } else {
+                // 如果没有，确保状态重置为显示传统断语
+                document.getElementById('analysis-text').classList.remove('hidden');
+                document.getElementById('analysis-title-ext').innerText = '';
+                document.getElementById('ai-result-box').classList.add('hidden');
+            }
         }
 
         function getSeasonState(wuxing, month) {
@@ -1876,6 +1936,26 @@
             let hist = JSON.parse(localStorage.getItem('qy_history') || '[]');
             const idx = hist.findIndex(h => h.t === item.t);
             if (idx >= 0) hist[idx] = item; else { hist.unshift(item); if (hist.length > 50) hist.pop(); }
+            localStorage.setItem('qy_history', JSON.stringify(hist));
+        }
+
+        // === 新增：专门保存 AI 结果的函数 ===
+        function saveAIResult(id, aiText) {
+            if (!id) return;
+            let hist = JSON.parse(localStorage.getItem('qy_history') || '[]');
+            const idx = hist.findIndex(h => h.t === id);
+            if (idx >= 0) {
+                hist[idx].ai = aiText; // 存入 ai 字段
+            } else {
+                // 以防万一记录不存在，强制存一条
+                hist.unshift({
+                    t: id,
+                    n: appState.currentNums,
+                    q: document.getElementById('res-question').value,
+                    fb: document.getElementById('res-feedback').value,
+                    ai: aiText
+                });
+            }
             localStorage.setItem('qy_history', JSON.stringify(hist));
         }
 
@@ -1943,12 +2023,23 @@
             navigator.clipboard.writeText(prompt).then(() => { alert("已复制详细提示词！\n请粘贴给 ChatGPT / DeepSeek / Claude。"); });
         }
 
-        function capture() {
-            updateCurrentRecord(); const target = document.getElementById('capture-area'); const originalBtnText = event.target.innerHTML; event.target.innerText = "生成中...";
-            
+        function capture(e) {
+            updateCurrentRecord();
+            const target = document.getElementById('capture-area');
+
+            // 兼容性获取触发按钮
+            const evt = e || window.event;
+            const btn = evt ? (evt.currentTarget || evt.target) : null;
+
+            let originalBtnText = "";
+            if (btn) {
+                originalBtnText = btn.innerHTML;
+                btn.innerText = "生成中...";
+            }
+
             // 针对 file:// 协议本地运行时的跨域 iframe 安全拦截，增加 ignoreElements 兼容机制，并允许 taint (避免 clone iframe 报错中断)
             html2canvas(target, {
-                backgroundColor: "#050505", scale: 2, useCORS: true, allowTaint: true, logging: false, 
+                backgroundColor: "#050505", scale: 2, useCORS: true, allowTaint: true, logging: false,
                 onclone: (clonedDoc) => {
                     const analysisCol = clonedDoc.getElementById('analysis-col'); if (analysisCol) analysisCol.style.display = 'none';
                     const visualCol = clonedDoc.getElementById('visual-col'); if (visualCol) { visualCol.style.borderRight = 'none'; visualCol.style.paddingRight = '0'; visualCol.style.paddingBottom = '0'; }
@@ -1956,9 +2047,17 @@
                     const qInput = clonedDoc.getElementById('res-question'); const qDiv = clonedDoc.createElement('div'); qDiv.className = "text-gray-300 text-base font-serif italic text-center"; qDiv.innerText = document.getElementById('res-question').value; qInput.parentNode.replaceChild(qDiv, qInput);
                     const fbInput = clonedDoc.getElementById('res-feedback'); const fbDiv = clonedDoc.createElement('div'); fbDiv.className = "text-gray-500 text-xs mt-2 border-t border-[#222] pt-2 whitespace-pre-wrap text-left"; fbDiv.innerText = document.getElementById('res-feedback').value ? "📝 " + document.getElementById('res-feedback').value : ""; fbInput.parentNode.replaceChild(fbDiv, fbInput);
                 }
-            }).then(canvas => { const link = document.createElement('a'); link.download = `乾元易卦_${new Date().getTime()}.png`; link.href = canvas.toDataURL("image/png"); link.click(); event.target.innerHTML = originalBtnText; }).catch(err => { alert("截图遇到本地安全限制跨域阻挡，建议部署后点击或使用系统截图。详情: " + err.message); event.target.innerHTML = originalBtnText; });
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `乾元易卦_${new Date().getTime()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                if (btn) btn.innerHTML = originalBtnText;
+            }).catch(err => {
+                alert("截图遇到本地安全限制跨域阻挡，建议部署后点击或使用系统截图。详情: " + err.message);
+                if (btn) btn.innerHTML = originalBtnText;
+            });
         }
-
         function calcXLR() {
             let n1 = +document.getElementById('xlr1').value, n2 = +document.getElementById('xlr2').value, n3 = +document.getElementById('xlr3').value; if (!n1) return;
             const XLR_MAP = [{ t: "大安·木", c: "text-[#4ade80]" }, { t: "留连·土", c: "text-[#d97706]" }, { t: "速喜·火", c: "text-[#f87171]" }, { t: "赤口·金", c: "text-[#d4af37]" }, { t: "小吉·水", c: "text-[#60a5fa]" }, { t: "空亡·土", c: "text-[#d97706]" }];
@@ -1996,7 +2095,7 @@
             appState.currentRecordId = null;
             document.getElementById('ai-result-box').classList.add('hidden');
             document.getElementById('ai-result-content').innerHTML = '';
-            
+
             // 恢复默认的静态断语显示并清空扩展标题
             document.getElementById('analysis-text').classList.remove('hidden');
             document.getElementById('analysis-title-ext').innerText = '';
@@ -2013,31 +2112,51 @@
             }
         }
 
-        // --- AI 集成流处理逻辑 ---
         window.renderYAML = function (rawText, isPremium) {
             let html = '';
-            
-            // 是否已经出现了 yaml 头
-            const isYamlFormat = rawText.includes('analysis:') || rawText.includes('conclusion:');
 
+            // 1. 兼容 DeepSeek 等思考模型的 <think> 标签
+            const thinkMatch = rawText.match(/<think>([\s\S]*?)(?:<\/think>|$)/);
+            if (thinkMatch) {
+                html += `<div class="mb-4 text-gray-500 text-xs italic opacity-60 border-l-2 border-[#333] pl-3">`;
+                html += `<div class="mb-1 text-[#d4af37]">✧ 神机暗推中...</div>`;
+                // 过滤转义原生 HTML 标签并换行，防止隐形
+                html += thinkMatch[1].replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>') + `</div>`;
+            }
+
+            // 2. 匹配 YAML 结构
+            const isYamlFormat = rawText.includes('analysis:') || rawText.includes('conclusion:');
             const analysisMatch = rawText.match(/analysis:\s*\|([\s\S]*?)(?:\nconclusion:\s*\||$)/);
             const conclusionMatch = rawText.match(/conclusion:\s*\|([\s\S]*)$/);
-            
-            if (analysisMatch && isPremium) {
-                html += `<div class="mb-4"><div class="text-[#f39c12] text-xs font-bold mb-2 tracking-widest">❖ 深度解析</div><div class="bg-[#111] p-4 rounded text-[#d1d5db]">${analysisMatch[1].trimStart().replace(/\n/g, '<br>')}</div></div>`;
-            }
-            if (conclusionMatch) {
-                html += `<div><div class="text-[#2ecc71] text-xs font-bold mb-2 tracking-widest">❖ 断言与建议</div><div class="bg-[#111] p-4 rounded border-l-2 border-[#2ecc71] text-white">${conclusionMatch[1].trimStart().replace(/\n/g, '<br>')}</div></div>`;
-            }
-            
+
             if (isYamlFormat) {
                 if (!isPremium && !conclusionMatch) {
-                    return '<div class="text-gray-500 italic text-xs animate-pulse opacity-60">老道正在窥算天机深处...<br>（因神钥权限，深度推盘暂不可见，拼命凝练结论中 ✨）</div>';
+                    return html + '<div class="text-gray-500 italic text-xs animate-pulse opacity-60">老道正在窥算天机深处...<br>（因神钥权限，深度推盘暂不可见，拼命凝练结论中 ✨）</div>';
                 }
-                return html;
+
+                if (analysisMatch && isPremium) {
+                    html += `<div class="mb-4"><div class="text-[#f39c12] text-xs font-bold mb-2 tracking-widest">❖ 深度解析</div><div class="bg-[#111] p-4 rounded text-[#d1d5db]">${analysisMatch[1].trimStart().replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div></div>`;
+                }
+                if (conclusionMatch) {
+                    html += `<div><div class="text-[#2ecc71] text-xs font-bold mb-2 tracking-widest">❖ 断言与建议</div><div class="bg-[#111] p-4 rounded border-l-2 border-[#2ecc71] text-white">${conclusionMatch[1].trimStart().replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div></div>`;
+                }
+
+                // 兜底：如果正在打字还没形成正则匹配，先展示原生文本，避免返回空导致假死
+                return html || rawText.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
             }
-            
-            return rawText.replace(/\n/g, '<br>');
+
+            // 3. 既没有 YAML 也没有 think，当做普通对话渲染
+            if (!thinkMatch) {
+                return rawText.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+            }
+
+            // 4. 处理思考结束，但刚好处在 YAML 出现前的边缘情况
+            let afterThink = rawText.split('</think>')[1];
+            if (afterThink) {
+                html += afterThink.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+            }
+
+            return html;
         };
 
         async function invokeAI() {
@@ -2079,12 +2198,16 @@
             btnAI.style.pointerEvents = 'none';
             btnAI.style.opacity = '0.5';
             aiBox.classList.remove('hidden');
-            
-            // 直接在大区域展示居中大加载动效
-            aiContent.innerHTML = `<div class="flex flex-col items-center justify-center py-10 space-y-4 opacity-70">
-                                     <div class="loader" style="transform: scale(1.5);"><span></span><span></span><span></span></div>
-                                     <div class="text-[#d4af37] text-sm tracking-widest mt-4 animate-pulse">正在测算中...</div>
-                                   </div>`;
+
+            // ==========================================
+            // 🌟 阶段 1：发起请求前，显示“正在连接”
+            // ==========================================
+            aiContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 space-y-4 opacity-70">
+                    <div class="loader" style="transform: scale(1.5);"><span></span><span></span><span></span></div>
+                    <div id="ai-status-text" class="text-[#d4af37] text-sm tracking-widest mt-4 animate-pulse">正在连接天机阵列...</div>
+                </div>
+            `;
 
             // 将视图滚动到 AI 结果处
             setTimeout(() => { window.scrollTo({ top: aiBox.offsetTop - 50, behavior: 'smooth' }); }, 100);
@@ -2093,24 +2216,33 @@
             try { isPremium = (JSON.parse(atob(card.split('.')[1])).type === 'premium'); } catch (e) { }
 
             try {
+                // 开始呼叫 PHP
                 const response = await fetch("https://meihua.vxni.ink/divine.php", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ question: question || "无问自占", hexagram: hexagramStr, card: card })
                 });
 
-                const contentType = response.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
+                if (response.headers.get('content-type')?.includes('application/json')) {
                     const errData = await response.json();
                     throw new Error(errData.error || "请求被拒绝");
                 }
                 if (!response.ok) throw new Error("网络崩塌: " + response.status);
 
-                aiContent.innerHTML = ''; // 清除 loading 动画
+                // ==========================================
+                // 🌟 阶段 2：Fetch 成功 resolve，说明和 PHP 握手成功！
+                // 此时 PHP 已经验证完体验卡，正在死等 AI 大模型的回复。
+                // ==========================================
+                const statusText = document.getElementById('ai-status-text');
+                if (statusText) {
+                    statusText.innerText = "✧ 握手成功！正在深度推演中 (约需10~30秒)...";
+                    statusText.classList.replace("text-[#d4af37]", "text-[#f39c12]"); // 稍微换个颜色提示状态变更
+                }
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder('utf-8');
                 let done = false; let buffer = ''; let fullRawText = '';
+                let isFirstChunk = true; // 标记是否是第一口真正的数据
 
                 while (!done) {
                     const { value, done: streamDone } = await reader.read();
@@ -2127,6 +2259,13 @@
                                 try {
                                     const parsed = JSON.parse(jsonStr);
                                     if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content) {
+                                        // ==========================================
+                                        // 🌟 阶段 3：真正收到 AI 的第一句话，清空转圈动画，开始打字
+                                        // ==========================================
+                                        if (isFirstChunk) {
+                                            aiContent.innerHTML = ''; // 清掉装载动画
+                                            isFirstChunk = false;
+                                        }
                                         fullRawText += parsed.choices[0].delta.content;
                                         const formattedHtml = window.renderYAML(fullRawText, isPremium);
                                         if (formattedHtml) aiContent.innerHTML = formattedHtml + '<span class="cursor"></span>';
@@ -2137,8 +2276,13 @@
                     }
                 }
                 const cur = aiContent.querySelector('.cursor'); if (cur) cur.remove();
+
+                // === 保存完整的 AI 结果到 localstorage ===
+                if (fullRawText) {
+                    saveAIResult(appState.currentRecordId, fullRawText);
+                }
+
             } catch (err) {
-                aiLoader.style.display = 'none';
                 aiContent.innerHTML = `<span class="text-[#fca5a5] text-xs">【神机受阻】${err.message}</span>`;
             } finally {
                 btnAI.style.pointerEvents = 'auto';
